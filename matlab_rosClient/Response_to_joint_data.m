@@ -1,0 +1,14 @@
+function Response_to_link_data( h,evtdata)
+%Response_to_link_data(h) : Sample response function to link data
+%Can add more parameters using the normal method:
+%@(h,params)Response_to_link_data(h,params)
+%Assumes there is atleast one Link name available
+%disp(h.getLinkPose(1));
+global count;
+count = count + 1;
+Jointangle  = h.getJointAngle(1);
+Jointvel = h.getJointVelocity(1);
+figure(1), subplot(2,1,1), hold on, plot(count, Jointangle(1),'b*');
+figure(1), subplot(2,1,2), hold on, plot(count, Jointvel(1),'r*');
+end
+
