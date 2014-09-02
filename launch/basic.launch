@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <!--include file="$(find gazebo_ros)/launch/empty_world.launch"-->
+    <!--arg name="world_name" value="$(find gazeboplugin_gcop)/worlds/traxxas_test.world"/-->
+    <arg name="world_name" value="$(find gazebo_rosmatlab_bridge)/worlds/scene3.world"/>
+    <!--arg name="world_name" value="$(find gazeboplugin_gcop)/worlds/polaris_test.world"/-->
+		<node name="gazebo" pkg="gazebo_ros" type="gazebo" args=" $(arg world_name)" output="screen"/>
+		<!--node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen"/-->
+		<!--node pkg="tf" type="static_transform_publisher" name="worldtobaselink_broadcaster" args="1 0 0 0 0 0 world base_link 20" /-->
+		<!--node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /-->
+    <!--arg name="world_name" value="$( find gazeboplugin_gcop)/worlds/cart_test1.world"/-->
+    <!--arg name="use_sim_time" value="false"/-->
+		<!--arg name="debug" value="true"/-->
+		<!--arg name="headless" value="true"/-->
+    <!-- more default parameters can be changed here -->
+  <!--/include-->
+</launch>
