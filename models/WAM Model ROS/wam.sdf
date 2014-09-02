@@ -1,0 +1,582 @@
+<?xml version="1.0"?>
+<!--
+    WAM SDF model.
+    Copyright (C) 2013 Benjamin Aaron Blumer
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  
+**************************************************************************
+ Model based on Institut de Robòtica's (IRI) URDF WAM Models and STL files. Find them and many more great tools here: http://wiki.iri.upc.edu/index.php/IRI_ROS
+ They were converted to SDF (using Gazebosim) and tweaked by Benjamin Blumer. 
+ IRI owns the original URDF code and the associated STL files (their licensed under LGPL). They did the bulk of the work in bringing this SDF to you.
+ I ran it through the Gazebo converter, changed some tags to get it to load, and studied and modified the joint limits.
+
+Barrett gives the joint limits of the WAM as:
+- 2.600000 < J1 < 2.60000
+- 2.000000 < J2 < 2.00000
+- 2.800000 < J3 < 2.80000
+- 0.900000 < J4 < 3.10000 
+- 4.760000 < J5 < 1.24000
+- 1.600000 < J6 < 1.60000
+- 3.000000 < J7 < 3.00000 
+
+The raw Gazebo-converted SDF file gave the joint limits as:
+- 2.600000 < J1 < 2.60000
+- 2.000000 < J2 < 2.00000
+- 2.800000 < J3 < 2.80000
+- 0.900000 < J4 < 2.80000
+- 4.800000 < J5 < 1.300000
+- 1.600000 < J6 < 1.60000
+- 2.200000 < J7 < 2.20000
+
+However it created some problems. The model would become shaky and occasionally the components would separate at the extremes. 
+I did some tweaking and realized that the model failed when pushed past these limits:
+- inf < J1 < inf
+- 1.97 < J2 < 1.97
+- inf < J3 < inf
+- inf < J4 < inf
+- inf < J5 < inf
+-(Pi/2 -.1) < J6 < (Pi/2 -.1)
+- inf < J7 < inf
+
+In trying to be as faithful to the original Barrett specs, while not allowing the model not fail, I've come to these limits:
+- 2.6 < J1 < 2.6
+- 1.97 < J2 < 1.97
+- 2.8 < J3 < 2.8
+- 0.9 < J4 < 3.1
+- 4.76 < J5 < 1.24
+- 1.5 < J6 < 1.5
+- 3.0 < J7 < 3.0
+            
+Benjamin Aaron Blumer (at) gmail 
+**************************************************************************************
+    
+    -->
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <model name="iri_wam">
+    <link name="wam_link0">
+      <pose>0.220000 0.140000 0.346000 0.000000 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>20.000000</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>1.000000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>1.000000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link0_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wambase.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link0_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wambase.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="wam0_fix" type="revolute">
+      <child>wam_link0</child>
+      <parent>world</parent>
+      <axis>
+        <limit>
+          <lower>0.000000</lower>
+          <upper>0.000000</upper>
+        </limit>
+        <dynamics>
+          <damping>0.000000</damping>
+        </dynamics>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+      </axis>
+    </joint>
+    <link name="wam_link1">
+      <pose>0.220000 0.140000 0.346000 0.000000 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>8.393600</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>1.000000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>1.000000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link1_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam1.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link1_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam1.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j1_joint" type="revolute">
+      <child>wam_link1</child>
+      <parent>wam_link0</parent>
+      <axis>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+        <limit>
+          <lower>-2.600000</lower>
+          <upper>2.600000</upper>
+          <effort>30.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>1</damping>
+          <!--default value is 100 -->
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="wam_link2">
+      <pose>0.220000 0.140000 0.346000 0.000000 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>4.848700</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>0.100000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>0.100000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link2_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam2.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link2_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam2.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j2_joint" type="revolute">
+      <child>wam_link2</child>
+      <parent>wam_link1</parent>
+      <axis>
+        <xyz>0.000000 1.000000 0.000000</xyz>
+        <limit>
+          <lower>-1.97</lower>
+          <upper>1.970000</upper>
+          <effort>30.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>100.000000</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="wam_link3">
+      <pose>0.220000 0.140000 0.346000 0.000000 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.225000 0.000000 0.000000 0.000000</pose>
+        <mass>1.725100</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>0.100000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>0.100000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link3_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam3.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link3_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam3.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j3_joint" type="revolute">
+      <child>wam_link3</child>
+      <parent>wam_link2</parent>
+      <axis>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+        <limit>
+          <lower>-2.800000</lower>
+          <upper>2.800000</upper>
+          <effort>30.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>100.000000</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="wam_link4">
+      <pose>0.265000 0.140000 0.896000 -1.570800 0.000000 0.000000</pose>
+      <inertial>
+        <pose>-0.045000 -0.150000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>2.082400</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>0.100000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>0.100000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link4_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam4.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link4_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam4.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j4_joint" type="revolute">
+      <child>wam_link4</child>
+      <parent>wam_link3</parent>
+      <axis>
+        <xyz>0.000000 1.000000 0.000000</xyz>
+        <limit>
+          <lower>-0.900000</lower>
+          <upper>3.10000</upper>
+          <effort>35.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>100.000000</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="wam_link5">
+      <pose>0.220000 0.140000 1.196000 0.000000 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>0.306700</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>0.100000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>0.100000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link5_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam5.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link5_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam5.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j5_joint" type="revolute">
+      <child>wam_link5</child>
+      <parent>wam_link4</parent>
+      <axis>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+        <limit>
+          <lower>-4.760000</lower>
+          <upper>1.240000</upper>
+          <effort>30.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>100.000000</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="wam_link6">
+      <pose>0.220000 0.140000 1.196000 -1.570800 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>0.427800</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>0.100000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>0.100000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link6_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam6.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link6_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam6.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j6_joint" type="revolute">
+      <child>wam_link6</child>
+      <parent>wam_link5</parent>
+      <axis>
+        <xyz>0.000000 1.000000 0.000000</xyz>
+        <limit>
+          <lower>-1.500000</lower>
+          <upper>1.500000</upper>
+          <effort>30.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>100.000000</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="wam_link7">
+      <pose>0.220000 0.140000 1.196000 0.000000 0.000000 0.000000</pose>
+      <inertial>
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <mass>0.055700</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>0.100000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>0.100000</izz>
+        </inertia>
+      </inertial>
+      <collision name="wam_link7_collision">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam7.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="wam_link7_vis">
+        <pose>0.000000 0.000000 0.000000 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <mesh>
+            <scale>1.000000 1.000000 1.000000</scale>
+            <uri>model://WAM Model ROS/meshes/wam7.stl</uri>
+          </mesh>
+        </geometry>
+        <material/>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <self_collide>1</self_collide>
+    </link>
+    <joint name="j7_joint" type="revolute">
+      <child>wam_link7</child>
+      <parent>wam_link6</parent>
+      <axis>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+        <limit>
+          <lower>-3.000000</lower>
+          <upper>3.000000</upper>
+          <effort>30.000000</effort>
+          <velocity>2.000000</velocity>
+        </limit>
+        <dynamics>
+          <damping>100.000000</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <!--plugin name="ros_wam_plugin" filename="build/libros_wam_plugin.so" /-->
+  </model>
+</sdf>

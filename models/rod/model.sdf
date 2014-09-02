@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="Rod">
+		<pose>0 0 0.27 0 0 0</pose>
+    <link name="link">
+      <inertial>
+        <mass>1</mass>
+        <inertia>
+          <ixx>0.08333</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.08333</iyy>
+          <iyz>0</iyz>
+          <izz>0.00125</izz>
+        </inertia>
+      </inertial>
+      <collision name="rod_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.015</radius>
+            <!--2.4 cm radius-->
+            <length>0.54</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="rod_visual">
+        <geometry>
+          <cylinder>
+            <radius>0.015</radius>
+            <!--2.4 cm radius-->
+            <length>0.54</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

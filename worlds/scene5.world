@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 5 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>1 1 -1</direction>
+    </light>
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://mud_box</uri>
+    </include>
+    <model name="Table_withrods">
+		<pose>1.2 -0.25 0 0 0 1.57</pose>
+      <include>
+        <uri>model://hole_table</uri>
+      </include>
+      <include>
+        <pose> 0.05 -0.0625 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_1</name>
+        <uri>model://rod</uri>
+      </include>
+      <include>
+        <pose> 0.15 -0.0625 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_2</name>
+        <uri>model://rod</uri>
+      </include>
+      <include>
+        <pose> 0.25 -0.0625 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_3</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.35 -0.0625 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_4</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.45 -0.0625 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_5</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.05 -0.125 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_6</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.15 -0.125 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_7</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.25 -0.125 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_8</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.35 -0.125 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_9</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.45 -0.125 0.27 0 0 0</pose>
+        <static>true</static>
+				<name>Rod_10</name>
+        <uri>model://rod</uri>
+      </include>
+			<include>
+        <pose> 0.25 -0.1875 0.54 0 0 0</pose>
+        <static>true</static><!-- Make this false for it to fall inside-->
+				<name>Rod_11</name>
+        <uri>model://rod</uri>
+			</include>
+    </model>
+    <!-- ARM -->
+    <model name="Unit_box">
+      <static>true</static>
+      <pose>0 0 1.0 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.1 0.4 0.4</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.1 0.4 0.4</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <include>
+        <uri>model://camera</uri>
+        <pose>0.05 0 0.2 0 0.523598 0</pose>
+      </include>
+      <joint name="camerajoint" type="revolute">
+        <parent>link</parent>
+        <child>camera::link</child>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <!--down facing camera-->
+          <limit>
+            <upper>0</upper>
+            <lower>0</lower>
+          </limit>
+        </axis>
+      </joint>
+    </model>
+    <model name="Wamwitharm">
+      <pose>0.05 -0.14 1 0 1.57 0</pose><!-- 0.14 obtained from the sdf file of wam-->
+      <include>
+        <uri>model://WAM Model ROS</uri>
+      </include>
+      <include>
+        <uri>model://irobot_hand</uri>
+        <pose>0.220000 0.140000 1.25000 0 0 0</pose>
+      </include>
+      <joint name="hand_joint" type="revolute">
+        <parent>iri_wam::wam_link7</parent>
+        <child>irobot_hand::base_link</child>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <limit>
+            <upper>0</upper>
+            <lower>0</lower>
+          </limit>
+        </axis>
+      </joint>
+    </model>
+    <!-- Human >
+    <include>
+      <static>true</static>
+      <pose> 1 1 1.2 0 0 1.57</pose>
+      <uri>model://ragdoll</uri>
+    </include-->
+  </world>
+</sdf>

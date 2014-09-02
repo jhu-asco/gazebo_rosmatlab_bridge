@@ -2,7 +2,7 @@
 <launch>
   <!--include file="$(find gazebo_ros)/launch/empty_world.launch"-->
     <!--arg name="world_name" value="$(find gazeboplugin_gcop)/worlds/traxxas_test.world"/-->
-    <arg name="world_name" value="$(find gazebo_rosmatlab_bridge)/worlds/scene3.world"/>
+    <arg name="world_name" value="$(find gazebo_rosmatlab_bridge)/worlds/scene5.world"/>
     <!--arg name="world_name" value="$(find gazeboplugin_gcop)/worlds/polaris_test.world"/-->
 		<node name="gazebo" pkg="gazebo_ros" type="gazebo" args=" $(arg world_name)" output="screen"/>
 		<!--node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen"/-->

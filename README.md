@@ -37,9 +37,16 @@ Client :
 * clear_body_wrench(gazebo_msgs/BodyRequest.srv)
 * clear_joint_forces(gazebo_msgsJointRequest.srv)
 
+Models:
+-----
+The extra models are provided in the models folder. Make sure you update the gazebo model path using this before launching any of the world files. 
+export GAZEBO_MODEL_PATH=/path/to/models/
+
 World Files:
 --------------
 World files provide scenes that can be used to test algorithms in matlab. To view them in matlab, use the basic.launch file and change the argument world_name according to your needs.
 For example:
 											 roslaunch gazebo_rosmatlab_bridge basic.launch 
 will launch the world file specified in the launch file.
+
+
