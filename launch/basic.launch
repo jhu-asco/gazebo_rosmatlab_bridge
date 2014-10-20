@@ -2,9 +2,14 @@
 <launch>
   <!--include file="$(find gazebo_ros)/launch/empty_world.launch"-->
     <!--arg name="world_name" value="$(find gazeboplugin_gcop)/worlds/traxxas_test.world"/-->
-    <arg name="world_name" value="$(find gazebo_rosmatlab_bridge)/worlds/scene5.world"/>
+    <!--arg name="world_name" value="$(find gazebo_rosmatlab_bridge)/worlds/scene5.world"/-->
     <!--arg name="world_name" value="$(find gazeboplugin_gcop)/worlds/polaris_test.world"/-->
-		<node name="gazebo" pkg="gazebo_ros" type="gazebo" args=" $(arg world_name)" output="screen"/>
+		<rosparam command="load" file="$(find gazebo_rosmatlab_bridge)/launch/basic_params.yaml" />
+		<node name="gazebo" pkg="gazebo_ros" type="gazebo" args=" $(arg world_name)" output="screen">
+			<!--param name="max_update_rate" type="double" value="100.0"/--><!-- Increase this for faster than real time-->
+			<!--param name="time_step" type="double" value="0.01"/-->
+		</node>
+		<node name="gazebo_rosmatlab_bridge" pkg="gazebo_rosmatlab_bridge" type="gazebo_rosmatlab_bridge_node" output="screen"/>
 		<!--node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen"/-->
 		<!--node pkg="tf" type="static_transform_publisher" name="worldtobaselink_broadcaster" args="1 0 0 0 0 0 world base_link 20" /-->
 		<!--node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" /-->

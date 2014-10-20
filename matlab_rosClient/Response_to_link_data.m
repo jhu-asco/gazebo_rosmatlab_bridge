@@ -1,4 +1,4 @@
-function Response_to_link_data(source,eventdata)
+function Response_to_link_data(source)
 %Response_to_link_data(h) : Sample response function to link data
 %Can add more parameters using the normal method:
 %@(h,params)Response_to_link_data(h,params)

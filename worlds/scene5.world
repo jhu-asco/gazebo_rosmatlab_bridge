@@ -129,7 +129,7 @@
         </visual>
       </link>
       <include>
-        <uri>model://camera</uri>
+        <uri>model://roscamera</uri>
         <pose>0.05 0 0.2 0 0.523598 0</pose>
       </include>
       <joint name="camerajoint" type="revolute">
