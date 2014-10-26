@@ -1,23 +1,18 @@
-function SteerPID(h,evtdata)
+function Optionalparams  = SteerPID(h,Optionalparams)%Linkdata and time are not used right now
 %STEERPID PID controller for Steering
 %kp = 50;
 %kd = 60;
-kp = 8;
-kd = 8;
-%ki = 0.05;
-if h.count_msgs(1) == 0%if count_msgs is too small
-    return
-end
-id1 = 1;
-id2 = 2;
-steering_angle1 = h.JointAngles{id1}(1,h.count_msgs(1));
-steering_vel1 = h.JointVelocities{id1}(1,h.count_msgs(1));
-steering_angle2 = h.JointAngles{id2}(1,h.count_msgs(1));
-steering_vel2 = h.JointVelocities{id2}(1,h.count_msgs(1));
-Steer_torque1 = kp*(h.Optional_params{1}-steering_angle1) - kd*(steering_vel1);
-Steer_torque2 = kp*(h.Optional_params{1}-steering_angle2) - kd*(steering_vel2);
-h.setEffort(h.Joint_names{1},Steer_torque1,h.step);
-h.setEffort(h.Joint_names{2},Steer_torque2,h.step);
+kp = 10;
+kd = 10;
+%disp(jointdata);
+%disp(t);
+ki = 0.005;
+error = [Optionalparams(1)-h.JointData(1,1) Optionalparams(1)-h.JointData(1,2)];
+Optionalparams(2:3) = Optionalparams(2:3) + ki*error;
+Steer_torque = kp*(error) - kd*h.JointData(4,1:2) + Optionalparams(2:3);
+mex_mmap('seteffort',h.Mex_data,[2,3], Steer_torque);
+%refreshdata;
+%figure(1), subplot(2,2,1), hold on, plot(jointdata(1,1).k
 %disp(h.time);
 end
 

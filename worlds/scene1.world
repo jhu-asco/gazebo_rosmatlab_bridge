@@ -26,28 +26,15 @@
       <direction>1 1 -1</direction>
     </light>
     <include>
-      <uri>model://robonaut</uri>
-			<pose> 0 0 0 0 0 1.57 </pose>
+      <uri>model://double_pendulum_with_base</uri>
     </include>
-		<include>
-			<uri>model://table</uri>
-			<pose> 1 0 0  0 0 1.57</pose>
-		</include>
-		<include>
-			<uri>model://coke_can</uri>
-			<pose> 1 0 2 0 0 0 </pose>
-		</include>
-		<include>
-			<uri>model://beer</uri>
-			<pose> 1 0.1 2 0 0 0 </pose>
-		</include>
-		<include>
-			<uri>model://bowl</uri>
-			<pose> 1.2 0 2 0 0 0 </pose>
-		</include>
+    <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+			<!--joints>double_pendulum_with_base::upper_joint;double_pendulum_with_base::lower_joint</joint-->
+			<joints>upper_joint;lower_joint</joint>
+		</plugin>
   </world>
-	<!-- List of models we want to incorporate -->
-	<!-- robonaut; 
+  <!-- List of models we want to incorporate -->
+  <!-- robonaut; 
 			 Simple Arm;
 			 Simple Arm Gripper;
 			 Kuka Youbot;
@@ -59,5 +46,4 @@
 			 GreyWall
 			 BrickBox
 			 Wam arm -->
-
 </sdf>

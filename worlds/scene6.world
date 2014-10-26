@@ -25,12 +25,17 @@
       </attenuation>
       <direction>1 1 -1</direction>
     </light>
-		<include>
-			<uri>model://rccar</uri>
-			<pose> 0 0 0.05  0 0 0</pose>
-		</include>
-		<!--include>
+    <include>
+      <uri>model://rccar</uri>
+      <pose> 0 0 0.05  0 0 0</pose>
+    </include>
+    <!--include>
 			<uri>model://table</uri>
 			<pose> 1 0 0  0 0 1.57</pose>
 		</include-->
+    <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+			<joints>rear_left_wheel_joint;rear_right_wheel_joint;base_to_steeringblock1;base_to_steeringblock2</joints>
+			<links>carbody</links>
+		</plugin>
+  </world>
 </sdf>

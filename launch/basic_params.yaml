@@ -1,6 +1,0 @@
-# List of links and joints to be published by gazebo
-#/gazebo/list_links: ['Unicycle::carbody', 'Unicycle::rear_left_wheel_joint', 'Unicycle::rear_right_wheel_joint','Unicycle::base_to_steeringblock1','Unicycle::base_to_steeringblock2']
-/gazebo/list_links: ['Unicycle::base_to_steeringblock1','Unicycle::base_to_steeringblock2', 'Unicycle::carbody']
-/gazebo/list_models: ['Unicycle']
-# Publishing rate for gazebo
-/gazebo/pub_rate: 20

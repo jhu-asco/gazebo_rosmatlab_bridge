@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(gazebo_rosmatlab_bridge)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -11,10 +12,14 @@ find_package(catkin REQUIRED COMPONENTS
 	std_srvs
   roscpp
   std_msgs
+	message_generation
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(Matlab REQUIRED)
+find_package(gazebo REQUIRED)
+
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -47,11 +52,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+	 JointEfforts.msg
+	 BodyWrenches.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -68,13 +73,13 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
- #generate_messages(
- #  DEPENDENCIES
+ generate_messages(
+   DEPENDENCIES
  #  gazebo_msgs
- # std_msgs
+  std_msgs
  # geometry_msgs
  # std_srvs
- #)
+ )
 
 ###################################
 ## catkin specific configuration ##
@@ -89,7 +94,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES gazebo_rosmatlab_bridge
 #  CATKIN_DEPENDS gazebo_msgs roscpp std_msgs
-#  DEPENDS system_lib
+   DEPENDS message_generation
 )
 
 ###########
@@ -101,24 +106,38 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+	include
+	${MATLAB_INCLUDE_DIR}
+	${GAZEBO_INCLUDE_DIRS} 
 )
+link_directories(${GAZEBO_LIBRARY_DIRS})
 
 ## Declare a cpp library
 # add_library(gazebo_rosmatlab_bridge
 #   src/${PROJECT_NAME}/gazebo_rosmatlab_bridge.cpp
 # )
 
+add_library(mex_mmap SHARED src/mex_mmap_interface.cpp)
+set(MEX_SOURCES mex_mmap)
+
+add_library(${PROJECT_NAME} src/gazebo_matlab_pluginbridge.cpp)
+
+
 ## Declare a cpp executable
- add_executable(gazebo_rosmatlab_bridge_node src/bridge_node.cpp)
+ #add_executable(gazebo_rosmatlab_bridge_node src/bridge_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(gazebo_rosmatlab_bridge_node gazebo_rosmatlab_bridge_generate_messages_cpp)
+add_dependencies(mex_mmap gazebo_rosmatlab_bridge_generate_messages_cpp)
+add_dependencies(${PROJECT_NAME} gazebo_rosmatlab_bridge_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(gazebo_rosmatlab_bridge_node
-   ${catkin_LIBRARIES}
-)
+# target_link_libraries(gazebo_rosmatlab_bridge_node
+#   ${catkin_LIBRARIES}
+#)
+
+target_link_libraries(mex_mmap ${MATLAB_LIBRARIES} ${catkin_LIBRARIES}) #Link to matlab libraries
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 #############
 ## Install ##
@@ -167,3 +186,24 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+############
+## Mex ##
+###########
+# 32-bit or 64-bit mex Copied from the example
+foreach (CPP_FILE ${MEX_SOURCES})
+	message("Processing: ${CPP_FILE}")
+	if(WIN32)
+		if (CMAKE_CL_64)
+				SET_TARGET_PROPERTIES(${CPP_FILE} PROPERTIES SUFFIX .mexw64)
+		else(CMAKE_CL_64)
+				SET_TARGET_PROPERTIES(${CPP_FILE} PROPERTIES SUFFIX .mexw32)
+		endif(CMAKE_CL_64)
+	else(WIN32) #For non-windows systems
+		if (CMAKE_SIZEOF_VOID_P MATCHES "8")
+				SET_TARGET_PROPERTIES(${CPP_FILE} PROPERTIES SUFFIX .mexa64 PREFIX "")
+		else(CMAKE_SIZEOF_VOID_P MATCHES "8")
+				SET_TARGET_PROPERTIES(${CPP_FILE} PROPERTIES SUFFIX .mexglx PREFIX "")
+		endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
+	endif(WIN32)
+endforeach(CPP_FILE)
