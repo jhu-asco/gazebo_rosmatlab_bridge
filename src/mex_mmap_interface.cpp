@@ -227,6 +227,14 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 			bw.wrench.assign(pointer2,pointer2+mxGetNumberOfElements(prhs[3]));//Assign array directly Avoiding writing for loop ourselves
 			while(!d->memout2.Write(bw));//Write the topic until it succeeds
 		}	
+		else if(!strcmp("loadimage",cmd))
+		{
+			//Create mmap based on topic name
+		}
+		else if(!strcmp("readimage",cmd))
+		{
+			//Read Latest Image
+		}
 		else if(!strcmp("availablenames",cmd))	
 		{
 			if(nlhs != 2 && nrhs != 2)

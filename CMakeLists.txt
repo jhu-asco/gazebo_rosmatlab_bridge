@@ -121,6 +121,7 @@ add_library(mex_mmap SHARED src/mex_mmap_interface.cpp)
 set(MEX_SOURCES mex_mmap)
 
 add_library(${PROJECT_NAME} src/gazebo_matlab_pluginbridge.cpp)
+add_library(gazebo_matlab_camera src/camera_matlab_plugin.cpp)
 
 
 ## Declare a cpp executable
@@ -137,7 +138,8 @@ add_dependencies(${PROJECT_NAME} gazebo_rosmatlab_bridge_generate_messages_cpp)
 #)
 
 target_link_libraries(mex_mmap ${MATLAB_LIBRARIES} ${catkin_LIBRARIES}) #Link to matlab libraries
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(gazebo_matlab_camera ${GAZEBO_LIBRARIES} CameraPlugin ${catkin_LIBRARIES})
 
 #############
 ## Install ##
