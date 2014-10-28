@@ -1,0 +1,600 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="Unicycle">
+    <!--pose>0 0 0.05 0 0 0</pose-->
+    <pose>0.0 0 0.05 0 0 0</pose>
+    <link name="carbody">
+      <pose>0.0 0 0 0 0 0</pose>
+      <inertial>
+        <pose>0.15 0 0.1 0 0 0</pose>
+        <mass>2.3</mass>
+        <!-- will have to do xacro-->
+        <inertia>
+          <ixx>0.41</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.416553</iyy>
+          <iyz>0</iyz>
+          <izz>0.216553</izz>
+        </inertia>
+      </inertial>
+      <collision name="carbody_collision">
+        <pose>0.17 0.0 0.055 0.0 0.0 0.0</pose>
+        <!--pose>-0.13 0 0 1.5707 5.55112e-17 1.5707</pose-->
+        <geometry>
+          <box>
+            <!--size>0.47 0.19 0.11</size-->
+            <size>0.50 0.26 0.11</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <!--collision name="carbody_collision_kinect">
+        <pose>0.18 -0.07 0.08 -1.5707 -5.55112e-17 1.5707</pose>
+        <geometry>
+          <mesh>
+            <scale>1e-05 1e-05 1e-05</scale>
+            <uri>model://rccar/meshes/kinect_sensor.dae</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision-->
+      <visual name="carbody_visual">
+        <!--pose>-0.13 0 0 1.5707 5.55112e-17 1.5707</pose-->
+        <pose>0.0 0.005 0.0 0.0 0.0 0.0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://rccar/meshes/traxxas1.dae</uri>
+          </mesh>
+        </geometry>
+        <!--material>
+          <script>
+            <uri>model://polaris_ranger_xp900/materials/scripts</uri>
+            <uri>model://polaris_ranger_xp900/materials/textures</uri>
+            <name>PolarisXP900/Diffuse</name>
+          </script>
+        </material-->
+        <!--material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/RedGlow</name>
+          </script>
+        </material-->
+      </visual>
+      <!--visual name="carbody_visual_kinect">
+        <pose>0.18 -0.07 0.08 -1.5707 -5.55112e-17 1.5707</pose>
+        <geometry>
+          <mesh>
+            <scale>1e-05 1e-05 1e-05</scale>
+            <uri>model://rccar/meshes/kinect_sensor.dae</uri>
+          </mesh>
+        </geometry>
+      </visual-->
+      <!--gravity>1</gravity-->
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>0</self_collide>
+    </link>
+    <link name="rear_right_wheel">
+      <pose>0 -0.13 0 1.57 0 0</pose>
+      <inertial>
+        <mass>0.6</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.05</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <ode>
+              <mu>5.0</mu>
+              <mu2>5.0</mu2>
+              <fdir1>0 0 1</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <kp>1e6</kp>
+              <soft_cfm>0.005</soft_cfm>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 0 1.57079 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://rccar/meshes/Wheel.dae</uri>
+          </mesh>
+          <!--cylinder>
+            <length>0.05</length>
+            <radius>0.05</radius>
+          </cylinder-->
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <link name="rear_left_wheel">
+      <pose>0 0.13 0 1.57079 0 0</pose>
+      <inertial>
+        <mass>0.6</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.05</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <ode>
+              <mu>5.0</mu>
+              <mu2>5.0</mu2>
+              <fdir1>0 0 1</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <kp>1e6</kp>
+              <soft_cfm>0.005</soft_cfm>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 0 1.57079 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://rccar/meshes/Wheel.dae</uri>
+          </mesh>
+          <!--cylinder>
+            <length>0.05</length>
+            <radius>0.05</radius>
+          </cylinder-->
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <!--gravity>1</gravity-->
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>0</self_collide>
+    </link>
+    <joint type="revolute" name="rear_left_wheel_joint">
+      <child>rear_left_wheel</child>
+      <parent>carbody</parent>
+      <axis>
+        <xyz>0 1 0.0</xyz>
+				<dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+        <!--use_parent_model_frame>true</use_parent_model_frame-->
+      </axis>
+    </joint>
+    <joint type="revolute" name="rear_right_wheel_joint">
+      <!--pose>0.0 0.0 -0.1 0 0 0</pose-->
+      <child>rear_right_wheel</child>
+      <parent>carbody</parent>
+      <axis>
+        <xyz>0 1 0.0</xyz>
+				<dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+        <!--use_parent_model_frame>true</use_parent_model_frame-->
+      </axis>
+    </joint>
+    <!--joint type="revolute" name="rear_differential_joint">
+      <child>rear_right_wheel</child>
+      <parent>rear_left_wheel</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0</damping> 
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <erp>0</erp>
+          <cfm>.1</cfm> 
+        </ode>
+      </physics>
+    </joint-->
+    <!--    <joint name="base_to_backwheels" type="revolute">
+      <child>backwheels</child>
+      <parent>carbody</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+      </axis>
+    </joint> -->
+    <link name="steeringblock1">
+      <pose>0.3 -0.12 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.1 </mass>
+        <!-- very less mass-->
+        <inertia>
+          <ixx> 1e-3 </ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy> 1e-3 </iyy>
+          <iyz>0</iyz>
+          <izz> 1 </izz><!-- Very High Inertia on Z axis-->
+        </inertia>
+      </inertial>
+    </link>
+    <joint name="base_to_steeringblock1" type="revolute">
+      <child>steeringblock1</child>
+      <parent>carbody</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.785</lower>
+          <upper>0.785</upper>
+        </limit>
+        <dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <!--cfm_damping>1</cfm_damping-->
+          <limit>
+            <cfm>0.0</cfm>
+            <erp>0.5</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name="frontwheel1">
+      <pose>0.3 -0.12 0 -1.570796 0 0</pose>
+			<inertial>
+        <mass>0.6</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+				</inertia>
+      </inertial>
+      <collision name="frontwheel1_collision">
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <ode>
+              <mu>5.0</mu>
+              <mu2>5.0</mu2>
+              <fdir1>0 0 1</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <kp>1e6</kp>
+              <soft_cfm>0.005</soft_cfm>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name="frontwheel1_visual">
+        <pose>0 0 0 0 1.57079 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://rccar/meshes/Wheel.dae</uri>
+          </mesh>
+          <!---cylinder>
+            <length>0.05</length>
+            <radius>0.05</radius>
+          </cylinder-->
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <!--gravity>1</gravity-->
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>0</self_collide>
+    </link>
+    <joint name="steeringblock1_to_frontwheel1" type="revolute">
+      <child>frontwheel1</child>
+      <parent>steeringblock1</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="steeringblock2">
+      <pose>0.3 0.12 0 0 0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.1 </mass>
+        <!-- very less mass-->
+        <inertia>
+          <ixx> 1e-3 </ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy> 1e-3 </iyy>
+          <iyz>0</iyz>
+          <izz> 1 </izz>
+        </inertia>
+      </inertial>
+    </link>
+    <joint name="base_to_steeringblock2" type="revolute">
+      <child>steeringblock2</child>
+      <parent>carbody</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-0.785</lower>
+          <upper>0.785</upper>
+        </limit>
+        <dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <!--cfm_damping>1</cfm_damping-->
+          <limit>
+            <cfm>0.000000</cfm>
+            <erp>0.500000</erp>
+          </limit>
+        </ode>
+      </physics>
+    </joint>
+    <link name="frontwheel2">
+      <pose>0.3 0.12 0 -1.570796 0 0</pose>
+			<inertial>
+        <mass>0.6</mass>
+        <inertia>
+          <ixx>0.01</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.01</iyy>
+          <iyz>0</iyz>
+          <izz>0.01</izz>
+				</inertia>
+      </inertial>
+      <collision name="frontwheel2_collision">
+        <geometry>
+          <cylinder>
+            <length>0.05</length>
+            <radius>0.05</radius>
+          </cylinder>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <ode>
+              <mu>5.0</mu>
+              <mu2>5.0</mu2>
+              <fdir1>0 0 1</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <kp>1e6</kp>
+              <soft_cfm>0.005</soft_cfm>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name="frontwheel2_visual">
+        <pose>0 0 0 0 1.57079 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://rccar/meshes/Wheel.dae</uri>
+          </mesh>
+          <!--cylinder>
+            <length>0.05</length>
+            <radius>0.05</radius>
+          </cylinder-->
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Black</name>
+            <uri>__default__</uri>
+          </script>
+        </material>
+      </visual>
+      <!--gravity>1</gravity-->
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+      <self_collide>0</self_collide>
+    </link>
+    <joint name="steeringblock2_to_frontwheel2" type="revolute">
+      <child>frontwheel2</child>
+      <parent>steeringblock2</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <dynamics>
+          <damping>0.0</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name="hokuyo::link">
+      <inertial>
+        <mass>0.100000</mass>
+        <inertia>
+          <ixx>1.000000</ixx>
+          <ixy>0.000000</ixy>
+          <ixz>0.000000</ixz>
+          <iyy>1.000000</iyy>
+          <iyz>0.000000</iyz>
+          <izz>1.000000</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hokuyo/meshes/hokuyo.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="collision-base">
+        <pose>0.000000 0.000000 -0.014500 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <box>
+            <size>0.050000 0.050000 0.041000</size>
+          </box>
+        </geometry>
+        <surface>
+          <bounce/>
+          <friction>
+            <ode/>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+      </collision>
+      <collision name="collision-top">
+        <pose>0.000000 0.000000 0.020500 0.000000 0.000000 0.000000</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.021000</radius>
+            <length>0.029000</length>
+          </cylinder>
+        </geometry>
+        <surface>
+          <bounce/>
+          <friction>
+            <ode/>
+          </friction>
+          <contact>
+            <ode/>
+          </contact>
+        </surface>
+      </collision>
+      <sensor name="laser" type="ray">
+        <pose>0.010000 0.000000 0.017500 0.000000 0.000000 0.000000</pose>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>640</samples>
+              <resolution>1.000000</resolution>
+              <min_angle>-2.268890</min_angle>
+              <max_angle>2.268899</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.080000</min>
+            <max>10.000000</max>
+            <resolution>0.010000</resolution>
+          </range>
+        </ray>
+        <plugin name="laser" filename="libRayPlugin.so"/>
+        <always_on>1</always_on>
+        <update_rate>30.000000</update_rate>
+        <visualize>1</visualize>
+      </sensor>
+      <velocity_decay>
+        <linear>0.000000</linear>
+        <angular>0.000000</angular>
+      </velocity_decay>
+      <pose>0.200000 0.000000 0.130000 0.000000 0.000000 0.000000</pose>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+      <gravity>1</gravity>
+    </link>
+    <joint name="hokuyo_joint" type="revolute">
+      <child>hokuyo::link</child>
+      <parent>carbody</parent>
+      <axis>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+        <limit>
+          <upper>0.000000</upper>
+          <lower>0.000000</lower>
+        </limit>
+      </axis>
+    </joint>
+  </model>
+</sdf>
