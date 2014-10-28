@@ -27,7 +27,7 @@ namespace gazebo
 	class MatlabCameraPlugin : public CameraPlugin
 	{
 		private:
-		boost::shared_ptr<SharedMmap<unsigned char> > imageMap;//Shared memory for directly sending Model Data
+		boost::shared_ptr<SharedMmap<unsigned char> > imageMap;//Shared memory for sharing image Data
 		uint32_t imagesize[3];
 		public: 
 		MatlabCameraPlugin() :CameraPlugin()
@@ -42,6 +42,7 @@ namespace gazebo
 			imagesize[0] = this->height;
 			imagesize[1] = this->width;
 			imagesize[2] = this->depth;
+			//imagesize[2] = this->depth;
 			gzdbg<<"Mmap_location: "<<mmap_location<<std::endl;
 			imageMap.reset(new SharedMmap<unsigned char>(mmap_location.c_str(),(imagesize[0]*imagesize[1]*imagesize[2])));//#TODO Buffer based on size of image
 		}
@@ -55,6 +56,7 @@ namespace gazebo
 //			gzdbg<<"Depth: "<<_depth<<std::endl;
  			common::Time update_time =  this->parentSensor->GetLastUpdateTime(); 
 			imageMap->Write(_image,imagesize,update_time.sec, update_time.nsec);//Write to shared memory
+				//gzdbg<<"Update_time: "<<update_time.sec<<"\t"<<update_time.nsec<<std::endl;
 		}
 	};
 	GZ_REGISTER_SENSOR_PLUGIN(MatlabCameraPlugin)

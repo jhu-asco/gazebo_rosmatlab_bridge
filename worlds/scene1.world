@@ -25,14 +25,14 @@
       </attenuation>
       <direction>1 1 -1</direction>
     </light>
-		<model name="double_pendulum_with_camera">
 			<include>
 				<uri>model://double_pendulum_with_base</uri>
 			</include>
-		</model>
-		<!--include>
+		<!--model name="double_pendulum_with_camera">
+		</model-->
+		<include>
 			<uri>model://matlabcamera</uri>
-		</include-->
+		</include>
     <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
 			<!--joints>double_pendulum_with_base::upper_joint;double_pendulum_with_base::lower_joint</joint-->
 			<joints>upper_joint;lower_joint</joint>

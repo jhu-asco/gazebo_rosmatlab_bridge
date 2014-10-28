@@ -40,17 +40,36 @@ template <class T=double>class SharedMmap {
 			 *
 			 * Note: "O_WRONLY" mode is not sufficient when mmaping.
 			 */
-			fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0777);
-			if (fd == -1) {
-				perror("Error opening file for writing");
-				return;
-			}
+			 if(n != 0)
+			 {
+				 fd = open(fname, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0777);
+				 if (fd == -1) {
+					 perror("Error opening file for writing");
+					 return;
+				 }
+			 }
+			 else
+			 {
+				 fd = open(fname, O_RDWR | O_CREAT, (mode_t)0777);
+				 if (fd == -1) {
+					 perror("Error opening file for reading");
+					 return;
+				 }
+			 }
 
-			this->n = n;
+			if(n == 0)
+			{
+				this->n = lseek(fd,0,SEEK_END);
+			}
+			else
+			{
+				this->n = 30 + n*sizeof(T);//Just for more buffer
+			}
+			printf("Number of bytes: %d",this->n);
 
 			/* Stretch the file size to the size of the (mmapped) array of ints
 			 */
-			result = lseek(fd, 12 + n*sizeof(T), SEEK_SET); //1+4*3 -1
+			result = lseek(fd, (this->n)*sizeof(uint8_t), SEEK_SET); //1+4*3 + 4*2 -1
 			if (result == -1) {
 				close(fd);
 				perror("Error calling lseek() to 'stretch' the file");
@@ -76,7 +95,7 @@ template <class T=double>class SharedMmap {
 
 			/* Now the file is ready to be mmapped.
 			 */
-			map = (uint8_t*)mmap(0, 12+n*sizeof(T), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+			map = (uint8_t*)mmap(0, (this->n)*sizeof(uint8_t), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 			if (map == MAP_FAILED) {
 				close(fd);
 				perror("Error mmapping the file");
@@ -87,7 +106,7 @@ template <class T=double>class SharedMmap {
 		virtual ~SharedMmap()
 		{
 			if (map)
-				if (munmap(map, n*sizeof(T)) == -1)
+				if (munmap(map, n*sizeof(uint8_t)) == -1)
 					perror("Error un-mmapping the file");
 
 			if (fd)
@@ -103,8 +122,8 @@ template <class T=double>class SharedMmap {
 		{
 			if(Status() != 128)//Not ready to read
 				return false;
-			basepointer = (T *)(map + 21);
-			memcpy((uint8_t *)nofelems,(uint8_t*)(map+1), 3*sizeof(uint32_t));//Read 4 bytes of data
+			memcpy((uint8_t *)basepointer,(uint8_t *)(map + 21),nofelems[0]*nofelems[1]*nofelems[2]*sizeof(T));
+			map[0] = 0;//Ready to write
 			return true;
 		}
 
@@ -112,24 +131,31 @@ template <class T=double>class SharedMmap {
 		{
 			if(Status() != 128)//Not ready to read
 				return false;
-			basepointer = (T *)(map + 21);
-			memcpy((uint8_t *)nofelems,(uint8_t*)(map+1), 3*sizeof(uint32_t));//Read 4 bytes of data
 			memcpy((uint8_t *)&sec,(uint8_t*)(map+13), sizeof(uint32_t));//Read 4 bytes of data
 			memcpy((uint8_t *)&nsec,(uint8_t*)(map+17), sizeof(uint32_t));//Read 4 bytes of data
+			memcpy((uint8_t *)basepointer,(uint8_t *)(map + 21),nofelems[0]*nofelems[1]*nofelems[2]*sizeof(T));
+			map[0] = 0;//Ready to write
 			return true;
 		}
-
+		
 		bool Read(T *basepointer, uint32_t *nofelems, uint32_t &sec, uint32_t &nsec)
 		{
 			if(Status() != 128)//Not ready to read
 				return false;
-			basepointer = (T *)(map + 21);
-			memcpy((uint8_t *)nofelems,(uint8_t*)(map+1), 3*sizeof(uint32_t));//Read 4 bytes of data
 			memcpy((uint8_t *)&sec,(uint8_t*)(map+13), sizeof(uint32_t));//Read 4 bytes of data
 			memcpy((uint8_t *)&nsec,(uint8_t*)(map+17), sizeof(uint32_t));//Read 4 bytes of data
+			memcpy((uint8_t *)basepointer,(uint8_t *)(map + 21),nofelems[0]*nofelems[1]*nofelems[2]*sizeof(T));
+			map[0] = 0;//Ready to write
 			return true;
 		}
 
+		bool Readnofelems(uint32_t *nofelems)
+		{
+			if(Status() != 128)//Not ready to read
+				return false;
+			memcpy((uint8_t *)nofelems,(uint8_t*)(map+1), 3*sizeof(uint32_t));//Read 4 bytes of data
+			return true;
+		}
 		bool Write(const T *basepointer,const uint32_t *nofelems, const uint32_t &sec, const uint32_t &nsec)
 		{
 			if(Status() != 0)//Not ready to write
@@ -138,14 +164,18 @@ template <class T=double>class SharedMmap {
 			memcpy((uint8_t*)(map+13),(uint8_t*)&sec,sizeof(uint32_t));
 			memcpy((uint8_t*)(map+17),(uint8_t*)&nsec,sizeof(uint32_t));
 			memcpy((uint8_t*)(map+21),(uint8_t*)basepointer,nofelems[0]*nofelems[1]*nofelems[2]*sizeof(T));
+			map[0] = 128;
+			return true;
 		}
 
 		bool Write(const T *basepointer,const uint32_t *nofelems)
 		{
 			if(Status() != 0)//Not ready to write
 				return false;
-			memcpy((uint8_t*)(map+1),(uint8_t*)nofelems,sizeof(uint32_t));
+			memcpy((uint8_t*)(map+1),(uint8_t*)nofelems,3*sizeof(uint32_t));
 			memcpy((uint8_t*)(map+21),(uint8_t*)basepointer,nofelems[0]*nofelems[1]*nofelems[2]*sizeof(T));
+			map[0] = 128;
+			return true;
 		}
 		bool Write(const T *basepointer,const uint32_t *nofelems, const int32_t &sec, const int32_t &nsec)
 		{
@@ -155,6 +185,8 @@ template <class T=double>class SharedMmap {
 			memcpy((uint8_t*)(map+13),(uint8_t*)&sec,sizeof(uint32_t));
 			memcpy((uint8_t*)(map+17),(uint8_t*)&nsec,sizeof(uint32_t));
 			memcpy((uint8_t*)(map+21),(uint8_t*)basepointer,nofelems[0]*nofelems[1]*nofelems[2]*sizeof(T));
+			map[0] = 128;//Ready to read
+			return true;
 		}
 };
 #endif

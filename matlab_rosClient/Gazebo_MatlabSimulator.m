@@ -2,7 +2,7 @@ classdef Gazebo_MatlabSimulator < handle
     %Gazebo client which handles the communication with gazebo.
     %Author Gowtham Garimella (ggarime1@jhu.edu)
     properties (Access = public)
-        Available_Names = {};%Helper Property which provides the available names to use
+        Available_Names = cell(1,2);%Helper Property which provides the available names to use
         count_msgs = zeros(2,1);% Number of messages received so far in the order: Links, Models, Clock.
         feedback_handles = {};%Array for timer to run callback handles and optional params as [2xn] cell array(Make this protected #TODO)
         LinkData = []; %Link Data
@@ -15,6 +15,7 @@ classdef Gazebo_MatlabSimulator < handle
     end
     properties (Access = protected)
         feedback_timer;%Timer for running Feedback handles
+        %image_timer;
         timerstart;%Simulation time when the timer started
     end
 %     events
@@ -24,7 +25,7 @@ classdef Gazebo_MatlabSimulator < handle
         function h = Gazebo_MatlabSimulator()
             %Starting Mex File:
             h.Mex_data = mex_mmap('new');
-            h.Available_Names = mex_mmap('availablenames',h.Mex_data);
+            [h.Available_Names{1}, h.Available_Names{2}] = mex_mmap('availablenames',h.Mex_data);
             h.feedback_timer = timer('TimerFcn',{@(~,~,x)mytimerFcn(x),h}...
                                 ,'Period',0.01,'ExecutionMode','fixedRate');
             %start(h.feedback_timer);%Start the timer;
@@ -38,10 +39,13 @@ classdef Gazebo_MatlabSimulator < handle
         end
         function stoptimer(h)
             stop(h.feedback_timer);%Stopping feedback timer
+            mex_mmap('setgazebostate',h.Mex_data,'pause');%Can also reset if needed
         end
         function starttimer(h,timeperiod,duration)
             %Duration is optional
             stop(h.feedback_timer);
+            %Start Gazebo Simulation;
+            mex_mmap('setgazebostate',h.Mex_data,'start');
             if nargin >= 2
                 set(h.feedback_timer,'Period',timeperiod);
             end

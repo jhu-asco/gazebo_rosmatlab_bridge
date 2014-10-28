@@ -10,7 +10,7 @@ ki = 0.01;
 error = [Optionalparams(1)-h.JointData(4,3) Optionalparams(1)-h.JointData(4,4)];
 Optionalparams(2:3) = Optionalparams(2:3) + ki*error;
 Drive_torque = kp*error + Optionalparams(2:3);
-mex_mmap('seteffort',h.Mex_data,[4,5],Drive_torque);
+mex_mmap('setjointeffort',h.Mex_data,[3,4],Drive_torque);
 %refreshdata;
 %figure(1), subplot(2,2,1), hold on, plot(jointdata(1,1).k
 %disp(h.time);

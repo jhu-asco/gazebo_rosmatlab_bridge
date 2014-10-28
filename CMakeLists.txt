@@ -56,6 +56,8 @@ find_package(gazebo REQUIRED)
    FILES
 	 JointEfforts.msg
 	 BodyWrenches.msg
+	 JointState.msg
+	 JointStates.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -77,7 +79,7 @@ find_package(gazebo REQUIRED)
    DEPENDENCIES
  #  gazebo_msgs
   std_msgs
- # geometry_msgs
+  geometry_msgs
  # std_srvs
  )
 
