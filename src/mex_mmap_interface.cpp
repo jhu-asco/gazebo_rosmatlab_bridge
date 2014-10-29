@@ -1,8 +1,52 @@
-/************************************************************************
- Base Sample MEX code written by Fang Liu (leoliuf@gmail.com).
-
- Modified by: Gowtham Garimella(garimella.gowtham74@gmail.com)
-************************************************************************/
+/*=================================================================
+ * mex_mmap_interface.cpp
+ *
+ * mex_mmap provides a bridge between gazebo and matlab
+ * The first argument provided to the function decides the action commited by the mex function:
+ * Available First arguments and corresponding documentation is as follows:
+ * 
+ * 1. "new" : INPUT [ARG1("new")] OUTPUT [Stored Data]
+ * -> This creates a new bridge with gazebo and provides stored data which needs to be passed for completing any of the actions below.
+ * 
+ * 2. "delete" : INPUT [ARG1("delete"), ARG2(Stored Data)] OUTPUT [NONE]
+ * -> Delete action deletes the bridge and closes it properly. It requires the stored data provided by the function when creating the class in the action above
+ *
+ * 3. "readlinkjoint": INPUT [ARG1("readlinkjoint") ARG2(Stored Data) ARG3(2x1 Cell with ids of links and joints to read)] OUTPUT: [Link Data[13xnlinkid]; Joint Data[6xnjointid]; 
+ *     Time(optional)]
+ * -> Reads the link and joint states. The link state is 13x1 vector [x,y,z,qw,qx,qy,qz,vx,vy,vz,wx,wy,wz] and the joint state is 6x1 vector with 3 axis angles and 3 angular velocities 
+ *    for those axis. The actual values depend on the type of joint. For example a revolute joint has rotation about only one axis and hence angle1 and velocity1 are only useful.
+ *
+ * 4. "readtime": INPUT [ARG1("readtime") ARG2(Stored Data)] OUTPUT [Current time in sec]
+ * -> Returns the simulation Time in seconds
+ * 
+ * 5. "setjointeffort": INPUT [ARG1("setjointeffort") ARG2(Stored Data) ARG3(1xn Jointids) ARG4(1xn Efforts)] OUTPUT [NONE]
+ * -> Sets the joint effort (Torque) for the ids specified.
+ * 
+ * 6. "setwrench": INPUT [ARG1("setwrench") ARG2(Stored Data) ARG3(nx1 Link ids) ARG4(6xn Wrenches)] OUTPUT [NONE]
+ * -> Sets the body wrench for the specified link ids. The wrench is in inertial frame and applied at COM of the link. The wrench is 6x1 vector[fx, fy, fz, torque_x, torque_y, torque_z]
+ * 
+ * 7. "setjointstate": INPUT [ARG1("setjointstate") ARG2(Stored Data) ARG3(joint index) ARG4(6x1 state)] OUTPUT [NONE]
+ * -> Sets the joint state i.e 3 axis angles and 3 axis angular velocities based on the type of joint and the data given. For example a revolute joint is set to specified 1st component
+ *    angle and 4th component of angular velocity
+ * 
+ * 8. "setmodelstate": INPUT [ARG1("setmodelstate") ARG2(Stored Data) ARG3(model name) ARG4(13x1 model state) ARG5(reference_frame(Optional))] OUTPUT [NONE]
+ * -> Set the model to a different state. The state of model is the same as a link [x,y,z,qw,qx,qy,qz,vx,vy,vz,wx,wy,wz];
+ * 
+ * 9. "setgazebostate": INPUT [ARG1("setmodelstate") ARG2(Stored Data) ARG3(status)] OUPTUT[NONE]
+ * -> This allows for starting and pausing gazebo from matlab. The status is a string which can be one of  "start pause reset"
+ *
+ * 10."availablenames": INPUT [ARG1("availablenames") ARG2(Stored Data)] OUTPUT[Array1(Link Names) Array2(JointNames)]
+ * ->Provides the available link and joint names. These indices are used to query link/joint states and for other actions mentioned above.
+ *
+ * 11."loadcamera": INPUT [ARG1("loadcamera") ARG2(Stored Data) ARG3(CameraTopic)] OUTPUT NONE
+ * ->Creates a camera bridge between gazebo and matlab. The topic name is specified in the plugin for matlab for camera
+ * 
+ * 12."readimage": INPUT [ARG1("readimage") ARG2(Stored Data) ARG3(CameraTopic)] OUTPUT [IMAGE(nx1) vector]
+ * ->Reads an image from matlab camera. The image output is nx1 vector of rgb pixel data. arranged as [r1g1b1r2g2b2...rngnbn] for n pixels of the image.
+ *
+ * Author: Gowtham Garimella (ggarime1@jhu.edu)
+ * Base Sample MEX code written by Fang Liu (leoliuf@gmail.com).
+ *================================================================*/
 
 /* system header */
 #include <math.h>
@@ -39,7 +83,7 @@
 #define UNIVERSAL 4
 #define BALL 5
 #define SCREW 6
-*/
+ */
 
 
 //Useful Links:
@@ -72,14 +116,14 @@ class Data_struct//Stores data
 		map<string, boost::shared_ptr<SharedMmap<unsigned char> > > imageMap;//Shared memory for sharing image Data
 
 		Data_struct():memout1("/tmp/in_jointefforts.tmp", 5000)//Will make a readonly mode #TODO
-								  ,memout2("/tmp/in_bodywrenches.tmp",5000)	
-									,memout3("/tmp/in_setmodelstate.tmp", 5000)
-									,memout4("/tmp/in_gazebocontrol.tmp", 5000)
-									,memout5("/tmp/in_setjointstate.tmp", 5000)
-									,memin1("/tmp/out_linkstates.tmp", 5000)
-									,memin2("/tmp/out_jointstates.tmp", 5000)
-									,memin3("/tmp/out_time.tmp",50)
-									,ispaused(false)
+									,memout2("/tmp/in_bodywrenches.tmp",5000)	
+												 ,memout3("/tmp/in_setmodelstate.tmp", 5000)
+														,memout4("/tmp/in_gazebocontrol.tmp", 5000)
+															,memout5("/tmp/in_setjointstate.tmp", 5000)
+															 ,memin1("/tmp/out_linkstates.tmp", 5000)
+															 ,memin2("/tmp/out_jointstates.tmp", 5000)
+															 ,memin3("/tmp/out_time.tmp",50)
+															 ,ispaused(false)
 	{
 	}
 };
@@ -118,8 +162,8 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 			while(!storage->memout4.Write(stringmsg));
 
 			/*while(storage->memin2.Status() != 128);//Wait till it is ready to be read can add timeouts here #TODO
-			storage->memin2.Read(storage->modeldata,storage->timestamp_model.sec,storage->timestamp_model.nsec);
-			*/
+				storage->memin2.Read(storage->modeldata,storage->timestamp_model.sec,storage->timestamp_model.nsec);
+			 */
 			plhs[0] = convertPtr2Mat<Data_struct>(storage); 
 			return;
 		}
@@ -332,7 +376,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 		{
 			if(nlhs != 0 && nrhs == 4) 
 			{
-				mexErrMsgTxt("Have to send args as {cmd, Stored_Data, joint_index, data[6x1]} and output is the image matrix");
+				mexErrMsgTxt("Have to send args as {cmd, Stored_Data, joint_index, data[6x1]} and output none");
 			}
 			Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
 			gazebo_rosmatlab_bridge::JointState jointstatemsg;
@@ -354,7 +398,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 		{
 			if(nlhs != 0 && nrhs <= 4)
 			{
-				mexErrMsgTxt("Have to send args as {cmd, Stored_Data, model_name, data[13x1] reference_frame{Optional}} and output is the image matrix");
+				mexErrMsgTxt("Have to send args as {cmd, Stored_Data, model_name, data[13x1] reference_frame{Optional}} and output none");
 			}
 			Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
 			gazebo_msgs::ModelState modelstate_msg;
@@ -378,7 +422,7 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 		{
 			if(nlhs != 0 && nrhs == 2)
 			{
-				mexErrMsgTxt("Have to send args as {cmd, Stored_Data, status} and output is the image matrix");
+				mexErrMsgTxt("Have to send args as {cmd, Stored_Data, status} and output none");
 			}
 			Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
 			char status_msg[64];
@@ -420,45 +464,3 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 		return;
 	}
 }
-/*else if(!strcmp("readmodel",cmd))
-		{
-			if((nrhs != 3) && (nlhs <= 2))
-			{
-				mexErrMsgTxt("Expected input: cmd Stored_data {id_model}; Output: Model_data Time(Optional)");
-				return;
-			}
-
-			if(!mxIsDouble(prhs[2]))
-				mexErrMsgTxt("Third arg, left hand side args need to be double");
-
-
-			Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
-
-			while(d->memin2.Status() != 128);//Wait till it is ready to be read
-			d->memin2.Read(d->modeldata,d->timestamp_model.sec,d->timestamp_model.nsec);
-
-			//Read rhs data:
-			double *model_ind = mxGetPr(prhs[2]);
-			int ninds = mxGetNumberOfElements(prhs[2]);
-
-
-			//Create lhs data:
-			plhs[0] = mxCreateDoubleMatrix(13,ninds,mxREAL);
-			double *lhs1 = mxGetPr(plhs[0]);
-
-			for(int count = 0;count < ninds; count++)
-			{
-				geometry_msgs::Pose &pose = d->modeldata.pose[int(model_ind[count])-1];
-				geometry_msgs::Twist &twist = d->modeldata.twist[int(model_ind[count])-1];
-
-				lhs1[13*count+0] = pose.position.x; lhs1[13*count+1] = pose.position.y; lhs1[13*count+2] = pose.position.z;
-				lhs1[13*count+3] = pose.orientation.w; lhs1[13*count+4] = pose.orientation.x; lhs1[13*count+5] = pose.orientation.y; lhs1[13*count+6] = pose.orientation.z;
-				lhs1[13*count+7] = twist.linear.x; lhs1[13*count+8] = twist.linear.y; lhs1[13*count+9] = twist.linear.z;
-				lhs1[13*count+10] = twist.angular.x; lhs1[13*count+11] = twist.angular.y; lhs1[13*count+12] = twist.angular.z;
-			}
-			if(nlhs == 2)
-			{
-				plhs[1] = mxCreateDoubleScalar(d->timestamp_model.toSec());//Time
-			}
-		}
-		*/
