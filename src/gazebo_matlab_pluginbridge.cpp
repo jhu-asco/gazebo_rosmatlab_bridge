@@ -1,8 +1,8 @@
 #include <gazebo/gazebo.hh>
-#include <common/common.hh>
-#include <physics/physics.hh>
-#include <sensors/sensors.hh>
-#include <transport/transport.hh>
+#include <gazebo/common/common.hh>
+#include <gazebo/physics/physics.hh>
+#include <gazebo/sensors/sensors.hh>
+#include <gazebo/transport/transport.hh>
 #include "gazebo/msgs/msgs.hh"
 
 #include <unistd.h>

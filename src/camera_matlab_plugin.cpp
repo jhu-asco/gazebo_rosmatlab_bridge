@@ -1,10 +1,10 @@
 #include <gazebo/gazebo.hh>
-#include <common/common.hh>
+#include <gazebo/common/common.hh>
 //#include <transport/transport.hh>
 
-#include <sensors/Sensor.hh>
-#include <sensors/CameraSensor.hh>
-#include <sensors/SensorTypes.hh>
+#include <gazebo/sensors/Sensor.hh>
+#include <gazebo/sensors/CameraSensor.hh>
+#include <gazebo/sensors/SensorTypes.hh>
 
 #include <gazebo/plugins/CameraPlugin.hh>
 

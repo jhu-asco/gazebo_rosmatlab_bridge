@@ -15,5 +15,5 @@
     <!-- Increase this for faster than real time-->
     <!--param name="time_step" type="double" value="0.01"/-->
   </node>
-  <node name="gazebo_rosmatlab_bridge" pkg="gazebo_rosmatlab_bridge" type="gazebo_rosmatlab_bridge_node" output="screen"/>
+  <!--node name="gazebo_rosmatlab_bridge" pkg="gazebo_rosmatlab_bridge" type="gazebo_rosmatlab_bridge_node" output="screen"/-->
 </launch>
