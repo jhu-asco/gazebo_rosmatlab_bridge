@@ -44,13 +44,7 @@ namespace gazebo
 		map<string, physics::JointPtr> pub_joints;
 		map<string, physics::LinkPtr> pub_links;//Smaller map of links and joints used by us
 		boost::shared_ptr<boost::thread> recv_thread_;
-
-
-		/*vector<physics::JointPtr> pub_joints;//Joints for which data is published or are controlled
-		vector<physics::LinkPtr> pub_links;//Links for which datat is published or are controlled
-		vector<string> link_strings;//Storing the link names for searching later
-		vector<string> joint_strings;
-		*/
+		bool internalcontrol;
 
 		Mmap<gazebo_msgs::LinkStates> memout1;//Shared memory for directly sending Link Data
 		Mmap<gazebo_rosmatlab_bridge::JointStates> memout2;//Shared memory for directly sending joint data
@@ -74,132 +68,127 @@ namespace gazebo
 		sensors::ImuSensorPtr imu_sensor;
 		sensors::DepthCameraSensorPtr kinect_sensor;
 		*/
-		void publishlinksandjoints()
+		inline void findlinkandjointstatus( gazebo_msgs::LinkStates &link_states, gazebo_rosmatlab_bridge::JointStates &joint_states)
 		{
-			if(memout1.Status() == 0)//Only publish data when stream is ready to be written
+			// fill link_states
+			for(std::map<string, physics::LinkPtr>::iterator it = pub_links.begin(); it!= pub_links.end(); ++it)
 			{
-				gazebo_msgs::LinkStates link_states;
-
-				// fill link_states
-				for(std::map<string, physics::LinkPtr>::iterator it = pub_links.begin(); it!= pub_links.end(); ++it)
+				physics::LinkPtr body = it->second;
+				if (body)
 				{
-					physics::LinkPtr body = it->second;
-					if (body)
-					{
-						link_states.name.push_back(it->first);
-						geometry_msgs::Pose pose;
-						gazebo::math::Pose  body_pose = body->GetWorldPose(); // - myBody->GetCoMPose();
-						gazebo::math::Vector3 pos = body_pose.pos;
-						gazebo::math::Quaternion rot = body_pose.rot;
-						pose.position.x = pos.x;
-						pose.position.y = pos.y;
-						pose.position.z = pos.z;
-						pose.orientation.w = rot.w;
-						pose.orientation.x = rot.x;
-						pose.orientation.y = rot.y;
-						pose.orientation.z = rot.z;
-						link_states.pose.push_back(pose);
-						gazebo::math::Vector3 linear_vel  = body->GetWorldLinearVel();
-						gazebo::math::Vector3 angular_vel = body->GetWorldAngularVel();
-						geometry_msgs::Twist twist;
-						twist.linear.x = linear_vel.x;
-						twist.linear.y = linear_vel.y;
-						twist.linear.z = linear_vel.z;
-						twist.angular.x = angular_vel.x;
-						twist.angular.y = angular_vel.y;
-						twist.angular.z = angular_vel.z;
-						link_states.twist.push_back(twist);
-					}
-				}
-
-				if(world)
-				{
-					common::Time current_time = world->GetSimTime();
-					bool status = memout1.Write( link_states, (uint32_t)current_time.sec, (uint32_t)current_time.nsec);
-					//gzdbg<<"Writing Link States: "<<status<<endl;//#DEBUG
+					link_states.name.push_back(it->first);
+					geometry_msgs::Pose pose;
+					gazebo::math::Pose  body_pose = body->GetWorldPose(); // - myBody->GetCoMPose();
+					gazebo::math::Vector3 pos = body_pose.pos;
+					gazebo::math::Quaternion rot = body_pose.rot;
+					pose.position.x = pos.x;
+					pose.position.y = pos.y;
+					pose.position.z = pos.z;
+					pose.orientation.w = rot.w;
+					pose.orientation.x = rot.x;
+					pose.orientation.y = rot.y;
+					pose.orientation.z = rot.z;
+					link_states.pose.push_back(pose);
+					gazebo::math::Vector3 linear_vel  = body->GetWorldLinearVel();
+					gazebo::math::Vector3 angular_vel = body->GetWorldAngularVel();
+					geometry_msgs::Twist twist;
+					twist.linear.x = linear_vel.x;
+					twist.linear.y = linear_vel.y;
+					twist.linear.z = linear_vel.z;
+					twist.angular.x = angular_vel.x;
+					twist.angular.y = angular_vel.y;
+					twist.angular.z = angular_vel.z;
+					link_states.twist.push_back(twist);
 				}
 			}
-			if(memout2.Status() == 0)//Only publish data when stream is ready to be written
+			//Fill Joint States
+			for(std::map<string, physics::JointPtr>::iterator it = pub_joints.begin(); it!= pub_joints.end(); ++it)
 			{
-				gazebo_rosmatlab_bridge::JointStates joint_states;
-				for(std::map<string, physics::JointPtr>::iterator it = pub_joints.begin(); it!= pub_joints.end(); ++it)
+				gazebo::physics::JointPtr joint = it->second;
+				if(joint) //If it is a joint
 				{
-					gazebo::physics::JointPtr joint = it->second;
-					if(joint) //If it is a joint
+					//std::string jointname = joint->GetScopedName();
+					geometry_msgs::Vector3 angle;
+					geometry_msgs::Vector3 vel_angle;
+					uint8_t joint_type;
+					if (joint->HasType(physics::Base::HINGE_JOINT))
 					{
-						/* We use the joint name to specify the type of joint: [NOT IMPLEMENTED NOW ]
-							 REVOLUTE  = 1;
-							 REVOLUTE2 = 2;
-							 PRISMATIC = 3;
-							 UNIVERSAL = 4;
-							 BALL      = 5;
-							 SCREW     = 6;
-						 */
-						//std::string jointname = joint->GetScopedName();
-						geometry_msgs::Vector3 angle;
-						geometry_msgs::Vector3 vel_angle;
-						uint8_t joint_type;
-						if (joint->HasType(physics::Base::HINGE_JOINT))
-						{
-							joint_type = REVOLUTE;
-							vel_angle.x = joint->GetVelocity(0);
-							angle.x = joint->GetAngle(0).Radian();
-						}
-						else if (joint->HasType(physics::Base::HINGE2_JOINT))
-						{
-							joint_type = REVOLUTE2;
-							vel_angle.x = joint->GetVelocity(0);
-							vel_angle.y = joint->GetVelocity(1);
-							angle.x = joint->GetAngle(0).Radian();
-							angle.y = joint->GetAngle(1).Radian();
-						}
-						else if (joint->HasType(physics::Base::BALL_JOINT))
-						{
-							joint_type = BALL;
-							vel_angle.x = joint->GetVelocity(0);
-							vel_angle.y = joint->GetVelocity(1);
-							vel_angle.z = joint->GetVelocity(2);
-
-							angle.x = joint->GetAngle(0).Radian();
-							angle.y = joint->GetAngle(1).Radian();
-							angle.z = joint->GetAngle(2).Radian();
-						}
-						else if (joint->HasType(physics::Base::SLIDER_JOINT))
-						{
-							joint_type = PRISMATIC;
-							vel_angle.x = joint->GetVelocity(0);
-							angle.x = joint->GetAngle(0).Radian();
-						}
-						else if (joint->HasType(physics::Base::SCREW_JOINT))
-						{
-							joint_type = SCREW;
-							vel_angle.x = joint->GetVelocity(0);
-							angle.x = joint->GetAngle(0).Radian();
-						}
-						else if (joint->HasType(physics::Base::UNIVERSAL_JOINT))
-						{
-							joint_type = UNIVERSAL;
-							vel_angle.x = joint->GetVelocity(0);
-							vel_angle.y = joint->GetVelocity(1);
-							angle.x = joint->GetAngle(0).Radian();
-							angle.y = joint->GetAngle(1).Radian();
-						}
-						joint_states.angle.push_back(angle);
-						joint_states.vel_angle.push_back(vel_angle);
-						joint_states.joint_type.push_back(joint_type);
-						joint_states.joint_name.push_back(it->first);
+						joint_type = REVOLUTE;
+						vel_angle.x = joint->GetVelocity(0);
+						angle.x = joint->GetAngle(0).Radian();
 					}
+					else if (joint->HasType(physics::Base::HINGE2_JOINT))
+					{
+						joint_type = REVOLUTE2;
+						vel_angle.x = joint->GetVelocity(0);
+						vel_angle.y = joint->GetVelocity(1);
+						angle.x = joint->GetAngle(0).Radian();
+						angle.y = joint->GetAngle(1).Radian();
+					}
+					else if (joint->HasType(physics::Base::BALL_JOINT))
+					{
+						joint_type = BALL;
+						vel_angle.x = joint->GetVelocity(0);
+						vel_angle.y = joint->GetVelocity(1);
+						vel_angle.z = joint->GetVelocity(2);
+
+						angle.x = joint->GetAngle(0).Radian();
+						angle.y = joint->GetAngle(1).Radian();
+						angle.z = joint->GetAngle(2).Radian();
+					}
+					else if (joint->HasType(physics::Base::SLIDER_JOINT))
+					{
+						joint_type = PRISMATIC;
+						vel_angle.x = joint->GetVelocity(0);
+						angle.x = joint->GetAngle(0).Radian();
+					}
+					else if (joint->HasType(physics::Base::SCREW_JOINT))
+					{
+						joint_type = SCREW;
+						vel_angle.x = joint->GetVelocity(0);
+						angle.x = joint->GetAngle(0).Radian();
+					}
+					else if (joint->HasType(physics::Base::UNIVERSAL_JOINT))
+					{
+						joint_type = UNIVERSAL;
+						vel_angle.x = joint->GetVelocity(0);
+						vel_angle.y = joint->GetVelocity(1);
+						angle.x = joint->GetAngle(0).Radian();
+						angle.y = joint->GetAngle(1).Radian();
+					}
+					joint_states.angle.push_back(angle);
+					joint_states.vel_angle.push_back(vel_angle);
+					joint_states.joint_type.push_back(joint_type);
+					joint_states.joint_name.push_back(it->first);
 				}
-				if(world)
+			}
+		}
+		void publishlinksandjoints()
+		{
+			if(!internalcontrol)
+			{
+				if(memout1.Status() == 0 || memout2.Status() == 0)//Only publish data when stream is ready to be written
 				{
-					bool status = memout2.Write( joint_states);
-					//gzdbg<<"Wrote Joint Data"<<endl;
+					common::Time current_time = world->GetSimTime();
+					gazebo_msgs::LinkStates link_states;
+					gazebo_rosmatlab_bridge::JointStates joint_states;
+					findlinkandjointstatus(link_states, joint_states);
+					if(world)
+					{
+						memout1.Write( link_states, (uint32_t)current_time.sec, (uint32_t)current_time.nsec);
+						memout2.Write( joint_states);
+						//gzdbg<<"Writing Link States: "<<status<<endl;//#DEBUG
+						//gzdbg<<"Wrote Joint Data"<<endl;
+					}
 				}
 			}
 		}
 		void setlinkwrenches()
 		{
-			memin2.Read(bodywrenches_msg);//Reading the message dont care about time stamp
+			if(!internalcontrol)
+			{
+				memin2.Read(bodywrenches_msg);//Reading the message dont care about time stamp
+			}
 			for(int count = 0; count < bodywrenches_msg.body_name.size();count++)
 			{
 				if(6*bodywrenches_msg.body_name.size() != bodywrenches_msg.wrench.size())
@@ -221,7 +210,10 @@ namespace gazebo
 		}
 		void setjointefforts()
 		{
-			memin1.Read(jointeffort_msg);//Reading the message dont care about time stamp 
+			if(!internalcontrol)
+			{
+				memin1.Read(jointeffort_msg);//Reading the message dont care about time stamp 
+			}
 			for(int count = 0; count < jointeffort_msg.joint_names.size();count++)
 			{
 				physics::JointPtr joint = pub_joints[jointeffort_msg.joint_names[count]];;
@@ -235,9 +227,12 @@ namespace gazebo
 
 		void publishsimtime()
 		{
-			gazebo::common::Time currentTime = world->GetSimTime();
-			std_msgs::Empty emptymsg;
-			memout3.Write(emptymsg, currentTime.sec, currentTime.nsec);
+			if(!internalcontrol)
+			{
+				gazebo::common::Time currentTime = world->GetSimTime();
+				std_msgs::Empty emptymsg;
+				memout3.Write(emptymsg, currentTime.sec, currentTime.nsec);
+			}
 		}
 
 		bool setjointstate(const gazebo_rosmatlab_bridge::JointState &joint_state)
@@ -304,8 +299,40 @@ namespace gazebo
 				return true;
 			}
 		}
+		void findgradient(std::string &model_name)
+		{
+			//First pause the world
+			world->SetPaused(true);
+			//set internal flag so that it does not read from stream while updating world
+			internalcontrol  = true;
+			//Read Nominal Control to apply
+			gazebo_rosmatlab_bridge::JointEfforts nominaljointeffort_msg;//Joint Effort message received from client
+			gazebo_rosmatlab_bridge::BodyWrenches nominalbodywrenches_msg;//Joint Effort message received from client
+			memin2.Read(nominalbodywrenches_msg);//Reading the message dont care about time stamp
+			memin1.Read(nominaljointeffort_msg);//Reading the message dont care about time stamp 
+			gazebo_msgs::LinkStates link_states;
+			gazebo_rosmatlab_bridge::JointStates joint_states;
+			//Store Model State:
+			gazebo::physics::ModelPtr model = world->GetModel(model_name);
+			gazebo::physics::ModelState model_state(model);
+			//forloop
+				//Perturb and copy the control  to jointeffort_msg and bodywrenches_msg
+				//Run the world by 1 step
+				world->StepWorld(1);
+				//Evaluate Link and joint states
+				findlinkandjointstatus(link_states, joint_states);
+				//Find the Gradient based on reading link and joint states
+				//Reset Model to how it was
+				model->SetState(model_state);
+		 //endforloop
+
+		 //Alternative to this is to run stepworld by N steps needed for computing finitedifferences
+		 //Then based on the count of the stepworld, the control is perturbed and model is reset inside the WorldUpdateStep.
+		 //For this we should have only one WorldUpdatestep where we collect link data and then reset the model to nominal state
+		 //Apply Perturbed control and find the new linkandjoint states
+		}
 		public: 
-		GazeboMatlabPlugin() :WorldPlugin(),
+		GazeboMatlabPlugin() :WorldPlugin(), internalcontrol(false),
 		memout1("/tmp/out_linkstates.tmp", 5000),//#TODO add a buffering system to the memout (Not needed right now)
 		memout2("/tmp/out_jointstates.tmp", 5000),
 		memout3("/tmp/out_time.tmp", 50),
