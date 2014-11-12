@@ -58,6 +58,9 @@ find_package(gazebo REQUIRED)
 	 BodyWrenches.msg
 	 JointState.msg
 	 JointStates.msg
+	 AvailableNames.msg
+	 PhysicsEngineConfig.msg
+	 RunSimulation.msg
  )
 
 ## Generate services in the 'srv' folder

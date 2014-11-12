@@ -1,16 +1,6 @@
 <?xml version="1.0"?>
 <sdf version="1.4">
   <world name="default">
-    <!-- Ground Plane -->
-    <include>
-      <uri>model://ground_plane</uri>
-    </include>
-    <!--include>
-      <uri>model://robocup09_spl_field</uri>
-    </include-->
-    <!--include>
-      <uri>model://sun</uri>
-    </include-->
     <!-- Light Source -->
     <light type="directional" name="sun">
       <cast_shadows>true</cast_shadows>
@@ -25,17 +15,15 @@
       </attenuation>
       <direction>1 1 -1</direction>
     </light>
+    <!-- Ground Plane -->
     <include>
-      <uri>model://rccar</uri>
-      <pose> 0 0 0.05  0 0 0</pose>
+      <pose>0.05 -0.14 1 0 1.57 0</pose>
+      <!-- 0.14 obtained from the sdf file of wam-->
+      <uri>model://WAM Model ROS</uri>
     </include>
-    <!--include>
-			<uri>model://table</uri>
-			<pose> 1 0 0  0 0 1.57</pose>
-		</include-->
     <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
-			<joints>rear_left_wheel_joint;base_to_steeringblock1;rear_right_wheel_joint;base_to_steeringblock2</joints>
-			<links>carbody</links>
-		</plugin>
+      <joints>j1_joint;j2_joint;j3_joint;j4_joint;j5_joint;j6_joint;j7_joint</joints>
+      <links>wam_link7</links>
+    </plugin>
   </world>
 </sdf>
