@@ -122,7 +122,7 @@ for i=1:N
       if norm(xs(:,1) - x0)>1e-3
           disp('xs is not starting from x0');
       end
-      if norm(JointData([1,4],[2,4])) > 1e-3
+      if norm(JointData(:,[2,4])) > 1e-3
           disp('Steering Joints not straight');
       end
   else

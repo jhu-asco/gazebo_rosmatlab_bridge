@@ -1,0 +1,182 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage[top = 1in, bottom = 1in, left = 1in, right = 1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyvrb}
+
+%opening
+\title{Gazebo Matlab Bridge using Ros serialization \\V1.0} \label{gazebo-matlab-bridge-using-ros-serialization}
+\author{Gowtham Garimella}
+
+\begin{document}
+
+
+\maketitle
+
+\section{Overview}
+This package provides a gazebo plugin and a mex interface for fast
+communication between matlab and Gazebo. The mex interface provides fast
+access to link and joint states; easy application of link and joint
+efforts; way to set model and joint states. Various matlab examples have
+been provided in MATLAB Installation: 
+\subsection{Prerequisites:}
+\begin{itemize}
+ \item  ros-hydro 
+ \item Gazebo 
+ \item ros-hydro-gazebo-packages
+\end{itemize}
+
+\section{Package installation}
+Clone the package in catkin workspace and run the
+setup\_script.bash with the arguments as MATLAB\_ROOT and
+ROS\_WORKSPACE.
+\begin{Verbatim}[frame=single]
+Example Usage: setup_script /usr/local/MATLAB/R2014a ~/hydro_workspace
+\end{Verbatim}
+%\textasciitilde{}/hydro\_workspace 
+\section{Usage} 
+To use the bridge, first run the gazebo with one of the world files provided in ``worlds''
+folder. This should load an example model in gazebo with the required
+plugin. Then you can run one of the matlab scripts provided to control
+the models. Some example pairs of world files and corresponding matlab
+scripts are provided below: 
+\begin{itemize}
+ \item scene1\_obstacle, scene1: arm\_shooting.m, arm\_closedloop.m 
+ \item scene2: car\_shooting.m, sopt\_car.m 
+ \item scene3: wam\_shooting.m 
+ \item scene4: quadcopter\_shooting.m
+\end{itemize}
+Additional scenes are provided for future applications. To load the
+world file with gazebo, you can run either of these commands: 
+\begin{Verbatim}[frame=single]
+ roslaunch gazebo_rosmatlab_bridge basic.launch scene:=scene1 
+ ///scene1 can be replaced by any of the scenes above 
+		  OR
+ ///Goto the worlds folder and run:
+ gazebo scene1.world #Will load the world file directly
+\end{Verbatim}
+
+\subsection{Mex Documentaion (Created from the source
+file):}\label{mex-documentaion-created-from-the-source-file}
+
+This file provides a mex interface for communicating with Gazebo. This
+file should be used along with the world plugin
+gazebo\_rosmatlab\_bridge to complete the connection with gazebo. This
+interface works by calling string arguments for completing specific
+actions. The supported string arguments and example usages are provided
+below: 
+\begin{itemize}
+\item NEW: This creates the bridge. You should always cleanup the
+class by calling DELETE after you are done with your simulation. It
+provides a pointer to be stored and passed on later.
+
+\begin{Verbatim}[frame=single]
+             MATLAB USAGE: A = mex_mmap('new');
+\end{Verbatim}
+
+\item
+  DELETE: This closes the bridge properly. It should be provided with
+  the pointer created using NEW
+
+\begin{Verbatim}[frame=single]
+        MATLAB USAGE: mex_mmap('delete',A); %A is the pointer created in above step
+\end{Verbatim}
+\item
+  RESET: This resets the world to its initial state. Useful for
+  resetting the simulation after every sample.
+
+\begin{Verbatim}[frame=single]
+        MATLAB USAGE: mex_mmap('reset',A); %A is the stored pointer
+\end{Verbatim}
+\item
+  AVAILABLENAMES: This provides the available link and joint names from
+  the link. The indices of the links and joints are used below to
+  configure the links and joints
+
+\begin{Verbatim}[frame=single]
+        MATLAB USAGE: [Link_Names, Joint_Names] = mex_mmap('availablenames',A);
+\end{Verbatim}
+\item
+  CONFIGUREPHYSICS: Configure the physics engine in Gazebo to run
+  faster/slower according to your simulation requirements;
+
+\begin{Verbatim}[frame=single]
+        MATLAB USAGE: mex_mmap('configurephysics', A, 0.001,2000); 
+
+\end{Verbatim}
+        \textit{Explanation}: This runs the physics engine twice the real time speed with a physics timestep of 1 millisecond. The arguments taken are the physics engine timestep 
+        Physics engine update frequency: The frequency at which the internal physics engine step is called
+\item
+  SETMODELSTATE: This sets the complete state of model using Model Pose
+  (x,y,z, qw,qx,qy,qz,
+  body\_vx,body\_vy,body\_vz,body\_wx,body\_wy,body\_wz){[}13x1{]} in
+  world frame and using Joint states(Joint angles, Joint
+  Velocities){[}2xn matrix{]}. %\#TODO 
+  The Joint Velocities are not supported yet. Gazebo somehow does not set the joint velocities and
+  should be replaced with link twists somehow
+
+\begin{Verbatim}[frame=single]
+        MATLAB USAGE I: mex_mmap('setmodelstate',h.Mex_data,'Airbotwith2dofarm'...
+			,[0 0 0 1 0 0 0 0 0 0 0 0 0],uint32(0:1),[0 pi;0 0]);
+        MATLAB USAGE II: mex_mmap('setmodelstate',h.Mex_data,'Airbotwith2dofarm'...
+			,[0 0 0 1 0 0 0 0 0 0 0 0 0]);
+        MATLAB USAGE III: mex_mmap('setmodelstate',h.Mex_data,'Airbotwith2dofarm'...
+			,[],uint32(0:1),[0 pi;0 0]);
+\end{Verbatim}
+        \textit{Explanation}: The 4th argument is the model pose in world frame. The fifth argument is joint indices (should be uint32) and starting index with 0. The final argument is the actual
+        joint angles and joint velocities.
+\item
+  SETJOINTSTATE: This sets a single joint angle and velocity(%\#TODO
+  Velocities not working properly). NOTE: This should not be used for
+  moving multiple joints and setmodelstate should be used instead.
+
+\begin{Verbatim}[frame=single]
+    MATLAB USAGE: mex_mmap('setjointstate', A, uint32(0) ,[1,0]);
+\end{Verbatim}
+    \textit{Explanation}: This takes in the zero based joint index as a single scalar which is uint32. The Joint State is just the angle and velocity. 
+\item
+  RUNSIMULATION: This function runs the gazebo physics engine for
+  specified number of steps and provides back the Link and Joint States
+  at the steps specified
+
+\begin{Verbatim}[frame=single]
+    MATLAB USAGE: [LinkData, JointData] =  mex_mmap('runsimulation', A,  ...
+                   JOINTIDS, JOINT_CONTROLS, LINKIDS, LINK_WRENCHES, STEPS);
+\end{Verbatim}
+    \begin{table}[h!]
+    \begin{tabular}{|p{0.2\textwidth}|p{0.7\textwidth}|}
+      \hline\\
+      A & Stored Pointer \\ \hline
+      STEPS& Vector$[N\times 1$ or $1\times N]$  providing number of steps for physics engine. It should start with zero and should be increasing and the last element provides the number of steps the physics engine should take\\ \hline
+      JOINTIDS & zero based joint index vector for which controls are provided $[n\times 1$ or $1\times n]$. The indices are obtained from available names described above.\\ \hline
+      JOINT\_CONTROLS & Matrix of $[2\times (n\times N)]$ with each $[2xn]$ matrix showing the Joint efforts at that step. The controls are constant in between two steps.\\ \hline %#TODO Add interpolation techniques
+      LINKIDS &  zero based link index vector for which link wrenches are provided [nx1 or 1xn]. The indices are obtained from available names described above.\\ \hline
+      LINK\_WRENCHES & The Link wrenches are provided as $[6 \times (n \times N)]$. Each $[6\times n]$ matrix provides wrenches for the set of links at that step.\\
+      \hline
+    \end{tabular}
+    \caption{Parameter explanation for runsimulation}
+    \end{table}
+    If you do not want to apply jointids or joint controls you can replace them by empty matrix. This applies to link ids and wrenches too
+    
+    \textit{Example System:} Double Pendulum where you want to control the two joints indexed 0, 1. We want to run the simulation for 1 second   
+    (Assuming physics timestep is 0.001 this is 1000 steps) with state data every 0.5 seconds. Also we assume that the joint effort is 0.1 for both joints in first half of the trajectory
+    and -0.1 in second half of the trajectory. This is called from matlab as follows.
+    \begin{Verbatim}[frame=single]
+    [LinkData,JointData] = mex_mmap('runsimulation',A, uint32([0 1]), ...
+			         [0.1 -0.1; 0.1 -0.1], [], [], [0 500 1000]);
+    \end{Verbatim}
+  NOTE: For more examples look at the examples from matlab\_rosClient folder of the package
+\end{itemize}
+
+\subsection{KNOWN BUGS:}\label{known-bugs}
+
+There are some known bugs with this interface that need to be fixed. 
+\begin{itemize}
+ \item You can run the MATLAB scripts only when Gazebo is running. If not it
+will get stuck in some infinite loops and matlab should be forced to
+closed down 
+\item Some times mex interface throws an error (Stream not ready
+to be read). In this case, a temporary solution is to restart gazebo.
+This is caused by the memory maps not syncing properly and to be fixed
+\end{itemize}
+
+\end{document}
