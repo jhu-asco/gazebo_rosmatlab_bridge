@@ -249,7 +249,10 @@ namespace gazebo
 
 				bool is_paused = world->IsPaused();
 				world->SetPaused(true);
-				model->SetWorldPose(target_pose);
+				if(completemodel_state.change_modelstate)
+				{
+					model->SetWorldPose(target_pose);
+				}
 
 				//gzdbg<<"Number of states: "<<completemodel_state.joint_states.size()<<endl;
 				for(int count = 0;count < completemodel_state.joint_states.size();count++)
@@ -263,8 +266,11 @@ namespace gazebo
 				world->SetPaused(is_paused);
 
 				// set model velocity
-				model->SetLinearVel(target_pos_dot);
-				model->SetAngularVel(target_rot_dot);
+				if(completemodel_state.change_modelstate)
+				{
+					model->SetLinearVel(target_pos_dot);
+					model->SetAngularVel(target_rot_dot);
+				}
 
 				/*
 				//Set Joint Velocities:

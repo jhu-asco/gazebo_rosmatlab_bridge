@@ -35,7 +35,7 @@ us(1,:) = 0.2;
 us(2,:) = 0.01;
 xs = zeros(4,S.N+1);
 
-figure(1),
+figure(1),clf,
 S.phandle(1) = plot(0,0);
 hold on, S.phandle(2) = plot(0,0,'r');
 hold on, S.phandle(3) = plot(0,0,'g');
@@ -45,29 +45,13 @@ set(S.phandle(2),'XData',S.steps);
 set(S.phandle(2),'YDataSource','xs(2,:)');
 set(S.phandle(3),'XData',S.steps);
 set(S.phandle(3),'YDataSource','xs(3,:)');%Tip Positions
-figure(2),
+figure(2),clf,
 S.phandle(4) = plot(0,0);
 hold on, S.phandle(5) = plot(0,0,'r');
 set(S.phandle(4),'XData',(S.steps(1:end-1)));
 set(S.phandle(4),'YDataSource','us(1,:)');
 set(S.phandle(5),'XData',(S.steps(1:end-1)));
 set(S.phandle(5),'YDataSource','us(2,:)');
-
-% figure(2),
-% S.phandle(3) = plot(0,0);
-% hold on, S.phandle(4) = plot(0,0,'r');
-% set(S.phandle(3),'XData',(S.steps(1:end-1)));
-% set(S.phandle(3),'YDataSource','us(1,:)');
-% set(S.phandle(4),'XData',(S.steps(1:end-1)));
-% set(S.phandle(4),'YDataSource','us(2,:)');
-
-%Update Trajectory
-%xs = sys_traj(x0, us, S);
-
-%subplot(1,2,1)
-
-%plot(xs(1,:), xs(2,:), '-b')
-hold on
 
 m = size(us,1);
 N = S.N;

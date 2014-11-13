@@ -219,13 +219,22 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
 				char modelname[64];
 				char ref_name[64];
 				mxGetString(prhs[2], modelname, sizeof(modelname));
-				double *modeldata = mxGetPr(prhs[3]);
 				modelstate_msg.model_name = std::string(modelname);
-				modelstate_msg.pose.position.x = modeldata[0]; modelstate_msg.pose.position.y = modeldata[1]; modelstate_msg.pose.position.z = modeldata[2];
-				modelstate_msg.pose.orientation.w = modeldata[3]; 
-				modelstate_msg.pose.orientation.x = modeldata[4]; modelstate_msg.pose.orientation.y = modeldata[5]; modelstate_msg.pose.orientation.z = modeldata[6];
-				modelstate_msg.twist.linear.x = modeldata[7]; modelstate_msg.twist.linear.y = modeldata[8]; modelstate_msg.twist.linear.z = modeldata[9]; 
-				modelstate_msg.twist.angular.x = modeldata[10]; modelstate_msg.twist.angular.y = modeldata[11]; modelstate_msg.twist.angular.z = modeldata[12];
+				if(mxGetNumberOfElements(prhs[3]) > 0)
+				{
+					double *modeldata = mxGetPr(prhs[3]);
+					modelstate_msg.pose.position.x = modeldata[0]; modelstate_msg.pose.position.y = modeldata[1]; modelstate_msg.pose.position.z = modeldata[2];
+					modelstate_msg.pose.orientation.w = modeldata[3]; 
+					modelstate_msg.pose.orientation.x = modeldata[4]; modelstate_msg.pose.orientation.y = modeldata[5]; modelstate_msg.pose.orientation.z = modeldata[6];
+					modelstate_msg.twist.linear.x = modeldata[7]; modelstate_msg.twist.linear.y = modeldata[8]; modelstate_msg.twist.linear.z = modeldata[9]; 
+					modelstate_msg.twist.angular.x = modeldata[10]; modelstate_msg.twist.angular.y = modeldata[11]; modelstate_msg.twist.angular.z = modeldata[12];
+					completemodelstate_msg.change_modelstate = true;
+				}
+				else
+				{
+					completemodelstate_msg.change_modelstate = false;
+					modelstate_msg.pose.orientation.w  = 1;//Just to avoid giving an invalid pose although it is not used
+				}
 				/*if(nrhs >= 5)
 				{
 					mxGetString(prhs[4], ref_name, sizeof(ref_name));
