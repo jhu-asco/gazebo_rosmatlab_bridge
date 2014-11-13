@@ -61,6 +61,7 @@ find_package(gazebo REQUIRED)
 	 AvailableNames.msg
 	 PhysicsEngineConfig.msg
 	 RunSimulation.msg
+	 CompleteModelState.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -80,7 +81,7 @@ find_package(gazebo REQUIRED)
 ## Generate added messages and services with any dependencies listed here
  generate_messages(
    DEPENDENCIES
- #  gazebo_msgs
+  gazebo_msgs
   std_msgs
   geometry_msgs
  # std_srvs

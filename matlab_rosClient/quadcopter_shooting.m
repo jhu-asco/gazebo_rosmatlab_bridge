@@ -5,7 +5,7 @@ function f = quadcopter_shooting()
 % Marin Kobilarov marin(at)jhu.edu
 
 % time horizon and segments
-tf = 1;
+tf = 3;
 S.N = 10;
 S.h = tf/S.N;
 S.m = 4;
@@ -28,7 +28,7 @@ S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
 % initial state
 %x0 = [-5; -2; -1.2; 0; 0];
 x0 = [0; 0; 0.182466; 0; 0; 0; 0;];%x y z vx vy vz yaw
-S.xf = [0.5; 0; 1; 0; 0; 0; 0];%Final state
+S.xf = [0.2; 0.3; 1; 0.2; 0.3; 0; 1];%Final state
 
 S.x0 = x0;
 
@@ -114,7 +114,7 @@ function xs = sys_traj(x0, us, S)
 %Can also set x0 for quadcopter
 N = size(us, 2);
 %xs(:,1) = x0;
-mex_mmap('stringreq',S.sim.Mex_data,'worldreset');
+mex_mmap('reset',S.sim.Mex_data);
 pause(0.01);%Testing
 %mex_mmap('setjointstate',S.sim.Mex_data,2,[x0(2),0,0,x0(4),0,0]);
 %mex_mmap('setjointstate',S.sim.Mex_data,1,[x0(1),0,0,x0(3),0,0]);%TODO Combine into one call

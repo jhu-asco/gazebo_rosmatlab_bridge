@@ -95,7 +95,7 @@ ucs = zeros(m, N);
 xs(:,1) = mvnrnd(pxs(1).m, pxs(1).S);
 %xs(:,1) = pxs(1).m;
 %Try setting xs(:,1) here thru gazebo
-mex_mmap('stringreq',S.sim.Mex_data,'worldreset');
+mex_mmap('reset',S.sim.Mex_data);
 pause(0.01);
 %Set car to initial posn:
 modelposeandtwist = [xs(1:2,1)' 0.05 rpy2quat([xs(3,1), 0, 0])' xs(4,1) zeros(1,5)];%13x1

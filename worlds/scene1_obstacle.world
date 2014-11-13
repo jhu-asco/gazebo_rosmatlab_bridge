@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 5 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>1 1 -1</direction>
+    </light>
+		<model name='unit_box_1'>
+      <pose>0 1.5 1 0 0 0</pose>
+      <link name='link'>
+				<collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='visual'>
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+      <static>true</static>
+    </model>
+
+		<include>
+      <uri>model://double_pendulum_with_base</uri>
+    </include>
+
+    <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+      <joints>upper_joint;lower_joint</joints>
+    </plugin>
+  </world>
+</sdf>

@@ -124,13 +124,15 @@ disp(0.5*y'*y);
  
 function xs = sys_traj(x0, us, S)
 
-N = size(us, 2);
-%xs(:,1) = x0;
-mex_mmap('stringreq',S.sim.Mex_data,'worldreset');
-pause(0.01);%Testing
-%mex_mmap('setjointstate',S.sim.Mex_data,2,[x0(2),0,0,x0(4),0,0]);
-%mex_mmap('setjointstate',S.sim.Mex_data,1,[x0(1),0,0,x0(3),0,0]);%TODO Combine into one call
+%N = size(us, 2);
 jointids = 1:7;%All Joints are actuated
+
+mex_mmap('reset',S.sim.Mex_data);
+pause(0.01);%Testing
+
+%modelposeandtwist = [0.05 -0.14 1 quat2rpy([0 1.57 0])' zeros(1,6)];
+%Can specify initial joint angles if you want
+
 [LinkData, ~] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us, ...
                                                 [], [], S.steps);
 xs = LinkData([1:3 8:13],:);%Tip Position and Tip Velocities

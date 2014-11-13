@@ -27,7 +27,7 @@ S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
 
 % initial state
 %x0 = [-5; -2; -1.2; 0; 0];
-x0 = [0; 0; 0; 0;];
+x0 = [-1; 0; 0; 0;];
 S.xf = [1; 0; 0; 0];
 
 S.x0 = x0;
@@ -120,16 +120,18 @@ disp(0.5*y'*y);
 function xs = sys_traj(x0, us, S)
 
 N = size(us, 2);
-%xs(:,1) = x0;
-mex_mmap('stringreq',S.sim.Mex_data,'worldreset');
-pause(0.01);%Testing
-%mex_mmap('setjointstate',S.sim.Mex_data,2,[x0(2),0,0,x0(4),0,0]);
-%mex_mmap('setjointstate',S.sim.Mex_data,1,[x0(1),0,0,x0(3),0,0]);%TODO Combine into one call
 jointids = [1 2];
+%xs(:,1) = x0;
+mex_mmap('reset',S.sim.Mex_data);
+pause(0.01);
+modelposeandtwist = [zeros(3,1);1;zeros(9,1)];
+mex_mmap('setmodelstate',S.sim.Mex_data,'double_pendulum_with_base',modelposeandtwist,...
+    uint32(jointids)-1,[x0(1:2);x0(3:4)]);
+
 [~, JointData] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us, ...
                                                     [], [], S.steps);
-xs([1,3],1:(N+1)) = JointData([1,4],1:2:(2*(N+1)));
-xs([2,4],1:(N+1)) = JointData([1,4],2:2:(2*(N+1)));
+xs([1,3],1:(N+1)) = JointData(:,1:2:(2*(N+1)));
+xs([2,4],1:(N+1)) = JointData(:,2:2:(2*(N+1)));
 A = rem(xs(1:2,:),2*pi);
 A(A>pi) = A(A>pi)-2*pi;
 A(A<-pi) = A(A<-pi)+2*pi;

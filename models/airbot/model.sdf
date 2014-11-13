@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="Airbotwith2dofarm">
+    <pose>0 0 0.2 0 0 0</pose>
+    <link name="baselink">
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>1.4</mass>
+        <inertia>
+          <ixx>0.025694</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.025694</iyy>
+          <iyz>0</iyz>
+          <izz>0.0451733</izz>
+        </inertia>
+      </inertial>
+      <visual name="baselink_visual_airbase">
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://airbot/meshes/quadrotor_base.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <collision name="baselink_visual_airbase">
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://airbot/meshes/quadrotor_base.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+    <link name="link1">
+      <pose>0.0732 0 -0.1 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>4.16667e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>4.16667e-05</iyy>
+          <iyz>0</iyz>
+          <izz>4.16667e-05</izz>
+        </inertia>
+      </inertial>
+      <visual name="link1_visual">
+        <pose>0.0875 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.175 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="link1_coll">
+        <pose>0.0875 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.175 0.02 0.02</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="airbase_joint_link1" type="revolute">
+      <child>link1</child>
+      <parent>baselink</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.2617</lower>
+          <upper>1.30899</upper>
+          <effort>30</effort>
+          <velocity>10</velocity>
+        </limit>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name="link2">
+      <pose>0.2482 0 -0.125 0 0 0</pose>
+      <inertial>
+        <pose>0.102692 0 0 0 0 0</pose>
+        <mass>0.13</mass>
+        <inertia>
+          <ixx>4.36667e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00461872</iyy>
+          <iyz>0</iyz>
+          <izz>0.00461872</izz>
+        </inertia>
+      </inertial>
+      <visual name="link2_visual">
+        <pose>0.21 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.42 0.02 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Blue</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="link2_coll">
+        <pose>0.21 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.42 0.02 0.02</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="link2_visual_link3">
+        <pose>0.445 0 0 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.1 0.02</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Green</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="link2_coll_link3">
+        <pose>0.445 0 0 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.1 0.02</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="link1_joint_link2" type="revolute">
+      <child>link2</child>
+      <parent>link1</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1.5708</lower>
+          <upper>3.14159</upper>
+          <effort>30</effort>
+          <velocity>10</velocity>
+        </limit>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+  </model>
+</sdf>

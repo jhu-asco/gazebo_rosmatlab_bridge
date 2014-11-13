@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <vector>
-#include <algorithm>
+//#include <algorithm>
 #include <ctime>
 
 #include <ros/ros.h>
@@ -16,7 +16,7 @@
 //Memcopy Topics
 #include "gazebo_msgs/ModelStates.h"
 #include "gazebo_msgs/LinkStates.h"
-#include "gazebo_msgs/ModelState.h"
+//#include "gazebo_msgs/ModelState.h"
 
 #include "gazebo_rosmatlab_bridge/JointEfforts.h"
 #include "gazebo_rosmatlab_bridge/BodyWrenches.h"
@@ -25,6 +25,7 @@
 #include "gazebo_rosmatlab_bridge/JointStates.h"
 #include "gazebo_rosmatlab_bridge/AvailableNames.h"
 #include "gazebo_rosmatlab_bridge/RunSimulation.h"
+#include "gazebo_rosmatlab_bridge/CompleteModelState.h"
 
 #include "std_msgs/Empty.h"
 #include "std_msgs/String.h"
@@ -48,7 +49,7 @@ namespace gazebo
 		physics::WorldPtr world;//World Pointer for accessing correspoding links and models
 		physics::PhysicsEnginePtr physicsEngine;
 		vector<physics::JointPtr> joints;
-		vector<physics::LinkPtr> links;//Smaller map of links and joints used by us
+		vector<physics::LinkPtr> links;//Smaller vector of links and joints used by us
 
 		vector<string> names_links;
 		vector<string> names_joints;
@@ -60,7 +61,7 @@ namespace gazebo
 		Mmap<gazebo_rosmatlab_bridge::JointStates> memout2;//Shared memory for directly sending joint data
 		Mmap<gazebo_rosmatlab_bridge::AvailableNames> memout3;//Shared memory for directly sending joint data
 		
-		Mmap<gazebo_msgs::ModelState> memin1;//Shared memory for setting Model State
+		Mmap<gazebo_rosmatlab_bridge::CompleteModelState> memin1;//Shared memory for setting Model State
 		Mmap<gazebo_rosmatlab_bridge::JointState> memin2;//Shared memory for setting Joint State
 		Mmap<gazebo_rosmatlab_bridge::RunSimulation> memin3;//Shared memory for sending simulation req
 		Mmap<std_msgs::String> memin4;//Shared memory for sending reset req
@@ -181,6 +182,7 @@ namespace gazebo
 
 		bool SetJointState(const gazebo_rosmatlab_bridge::JointState &joint_state)
 		{
+			
 			physics::JointPtr joint = joints[joint_state.joint_ind];;
 
 			if(joint) //If it is a joint
@@ -223,8 +225,9 @@ namespace gazebo
 		}
 
 
-		bool SetModelState(gazebo_msgs::ModelState &model_state)
+		bool SetModelState(gazebo_rosmatlab_bridge::CompleteModelState &completemodel_state)
 		{
+			gazebo_msgs::ModelState &model_state = completemodel_state.model_state;
 			gazebo::math::Vector3 target_pos(model_state.pose.position.x,model_state.pose.position.y,model_state.pose.position.z);
 			gazebo::math::Quaternion target_rot(model_state.pose.orientation.w,model_state.pose.orientation.x,model_state.pose.orientation.y,model_state.pose.orientation.z);
 			target_rot.Normalize(); // eliminates invalid rotation (0, 0, 0, 0)
@@ -240,15 +243,41 @@ namespace gazebo
 			}
 			else
 			{
+				//Set Model and Joint States:
+				//gazebo_rosmatlab_bridge::JointStates &joint_states = completemodelstate.joint_states;
+				std::map<std::string, double> jointpositions;
+
 				bool is_paused = world->IsPaused();
 				world->SetPaused(true);
 				model->SetWorldPose(target_pose);
+
+				//gzdbg<<"Number of states: "<<completemodel_state.joint_states.size()<<endl;
+				for(int count = 0;count < completemodel_state.joint_states.size();count++)
+				{
+					gazebo_rosmatlab_bridge::JointState &jointstate = completemodel_state.joint_states[count];
+					jointpositions[names_joints[jointstate.joint_ind]] = jointstate.angle.x;//Only useful for x, y, z
+				//	gzdbg<<"Joint Positions: "<<names_joints[jointstate.joint_ind]<<"\t"<<jointstate.angle.x<<endl;
+				}
+				model->SetJointPositions(jointpositions);
+
 				world->SetPaused(is_paused);
 
 				// set model velocity
 				model->SetLinearVel(target_pos_dot);
 				model->SetAngularVel(target_rot_dot);
 
+				/*
+				//Set Joint Velocities:
+				for(int count = 0; count < completemodel_state.joint_states.size();count++)
+				{
+					uint32_t index = completemodel_state.joint_states[count].joint_ind;
+					joints[index]->SetVelocity(0,completemodel_state.joint_states[count].vel_angle.x);//Set Joint Velocity
+					joints[index]->Update();
+					gzdbg<<"joints[index]: "<<index<<"\t"<<joints[index]->GetName()<<endl;
+					gzdbg<<"Joint Velocities: "<<completemodel_state.joint_states[count].vel_angle.x<<"\t"<<joints[index]->GetVelocity(0)<<endl;
+				}
+				*/
+				
 				return true;
 			}
 		}
@@ -378,7 +407,7 @@ namespace gazebo
 
 		void ReceivingThread()
 		{
-			gazebo_msgs::ModelState modelstate_msg;
+			gazebo_rosmatlab_bridge::CompleteModelState modelstate_msg;
 			std_msgs::String string_msg;
 			gazebo_rosmatlab_bridge::PhysicsEngineConfig physics_msg;
 			gazebo_rosmatlab_bridge::JointState jointstate_msg;
@@ -401,6 +430,7 @@ namespace gazebo
 				{
 					SetJointState(jointstate_msg);
 				}
+
 				if(memin3.Read(simulation_req))
 				{
 					physxcount = 0;

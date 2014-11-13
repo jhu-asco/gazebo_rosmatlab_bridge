@@ -1,78 +1,73 @@
 function mex_mmap
-%MEX_MMAP This provides bridge between gazebo and matlab
-% mex_mmap provides a bridge between gazebo and matlab The first argument
-% provided to the function decides the action commited by the mex function:
-% Available First arguments and corresponding documentation is as follows:
+%MEX_MMAP Provides bridge between gazebo and matlab
+% This file provides a mex interface for communicating with Gazebo. This file should be used along with the world plugin gazebo_rosmatlab_bridge
+% to complete the connection with gazebo. This interface works by calling string arguments for completing specific actions.
+% The supported string arguments and example usages are provided below:
+%   -> NEW: This creates the bridge. You should always cleanup the class by calling DELETE after you are done with your simulation. It provides a pointer
+%      to be stored and passed on later.
 %
-% 1. "new" : INPUT [ARG1("new")] OUTPUT [Stored Data] 
-% -> This creates a new bridge with gazebo and provides stored data which
-% needs to be passed for completing any of the actions below.
+%      MATLAB USAGE: A = mex_mmap('new');
 %
-% 2. "delete" : INPUT [ARG1("delete"), ARG2(Stored Data)] OUTPUT [NONE] 
-% -> Delete action deletes the bridge and closes it properly. It requires
-% the stored data provided by the function when creating the class in the
-% action above
 %
-% 3. "readlinkjoint": INPUT [ARG1("readlinkjoint") ARG2(Stored Data)
-% ARG3(2x1 Cell with ids of links and joints to read)] OUTPUT: [Link
-% Data[13xnlinkid]; Joint Data[6xnjointid]; Time(optional)] -> Reads the
-% link and joint states. The link state is 13x1 vector
-% [x,y,z,qw,qx,qy,qz,vx,vy,vz,wx,wy,wz] and the joint state is 6x1 vector
-% with 3 axis angles and 3 angular velocities for those axis. The actual
-% values depend on the type of joint. For example a revolute joint has
-% rotation about only one axis and hence angle1 and velocity1 are only
-% useful.
+%   -> DELETE: This closes the bridge properly. It should be provided with the pointer created using NEW
 %
-% 4. "readtime": INPUT [ARG1("readtime") ARG2(Stored Data)] OUTPUT [Current
-% time in sec] 
-% -> Returns the simulation Time in seconds
+%     MATLAB USAGE: mex_mmap('delete',A); %A is the pointer created in above step
 %
-% 5. "setjointeffort": INPUT [ARG1("setjointeffort") ARG2(Stored Data)
-% ARG3(1xn Jointids) ARG4(1xn Efforts)] OUTPUT [NONE] 
-% -> Sets the joint effort (Torque) for the ids specified.
 %
-% 6. "setwrench": INPUT [ARG1("setwrench") ARG2(Stored Data) ARG3(nx1 Link
-% ids) ARG4(6xn Wrenches)] OUTPUT [NONE] 
-% -> Sets the body wrench for the specified link ids. The wrench is in
-% inertial frame and applied at COM of the link. The wrench is 6x1
-% vector[fx, fy, fz, torque_x, torque_y,
-% torque_z]
+%   -> RESET: This resets the world to its initial state. Useful for resetting the simulation after every sample.
 %
-% 7. "setjointstate": INPUT [ARG1("setjointstate") ARG2(Stored Data)
-% ARG3(joint index) ARG4(6x1 state)] OUTPUT [NONE] 
-% -> Sets the joint state i.e 3 axis angles and 3 axis angular velocities
-% based on the type of joint and the data given. For example a revolute
-% joint is set to specified 1st component angle and 4th component of
-% angular velocity
+%     MATLAB USAGE: mex_mmap('reset',A); %A is the stored pointer
 %
-% 8. "setmodelstate": INPUT [ARG1("setmodelstate") ARG2(Stored Data)
-% ARG3(model name) ARG4(13x1 model state) ARG5(reference_frame(Optional))]
-% OUTPUT [NONE] 
-%-> Set the model to a different state. The state of model is the same as a
-%link [x,y,z,qw,qx,qy,qz,vx,vy,vz,wx,wy,wz];
 %
-% 9. "setgazebostate": INPUT [ARG1("setmodelstate") ARG2(Stored Data)
-% ARG3(status)] OUPTUT[NONE] 
-% -> This allows for starting and pausing gazebo from matlab. The status is
-% a string which can be one of  "start pause reset"
+%   -> AVAILABLENAMES: This provides the available link and joint names from the link. The indices of the links and joints are used below to configure the links and joints
 %
-% 10."availablenames": INPUT [ARG1("availablenames") ARG2(Stored Data)]
-% OUTPUT[Array1(Link Names) Array2(JointNames)] 
-% ->Provides the available link and joint names. These indices are used to
-% query link/joint states and for other actions mentioned above.
+%     MATLAB USAGE: [Link_Names, Joint_Names] = mex_mmap('availablenames',A);
 %
-% 11."loadcamera": INPUT [ARG1("loadcamera") ARG2(Stored Data)
-% ARG3(CameraTopic)] OUTPUT NONE 
-% ->Creates a camera bridge between gazebo and matlab. The topic name is
-% specified in the plugin for matlab for camera
 %
-% 12."readimage": INPUT [ARG1("readimage") ARG2(Stored Data)
-% ARG3(CameraTopic)] OUTPUT [IMAGE(nx1) vector] 
-% ->Reads an image from matlab camera. The image output is nx1 vector of
-% rgb pixel data. arranged as [r1g1b1r2g2b2...rngnbn] for n pixels of the
-% image.
+%   -> CONFIGUREPHYSICS: Configure the physics engine in Gazebo to run faster/slower according to your simulation requirements;
 %
-% Author: Gowtham Garimella (ggarime1@jhu.edu) 
-%Base Sample MEX code written by Fang Liu (leoliuf@gmail.com).
-
-
+%     MATLAB USAGE: mex_mmap('configurephysics', A, 0.001,2000);
+%
+%     EXPLANATION: This runs the physics engine twice the real time speed with a physics timestep of 1 millisecond. The arguments taken are the physics engine timestep
+%     Physics engine update frequency: The frequency at which the internal physics engine step is called
+%
+%
+%   -> SETMODELSTATE: This sets the complete state of model using Model Pose (x,y,z, qw,qx,qy,qz, body_vx,body_vy,body_vz,body_wx,body_wy,body_wz)[13x1] in world frame and using
+%     Joint states(Joint angles, Joint Velocities)[2xn matrix].
+%     #TODO The Joint Velocities are not supported yet. Gazebo somehow does not set the joint velocities and should be replaced with link twists somehow
+%
+%     MATLAB USAGE I: mex_mmap('setmodelstate',h.Mex_data,'Airbotwith2dofarm',[0 0 0 1 0 0 0 0 0 0 0 0 0],...
+%                             uint32(0:1),[0 pi;0 0]);
+%     MATLAB USAGE II: mex_mmap('setmodelstate',h.Mex_data,'Airbotwith2dofarm',[0 0 0 1 0 0 0 0 0 0 0 0 0]);
+%
+%     Explanation: The 4th argument is the model pose in world frame. The fifth argument is joint indices as uint32 and starting index with 0. The final argument is the actual
+%     joint angles and joint velocities.
+%
+%
+%   -> SETJOINTSTATE: This sets a single joint angle and velocity(#TODO Velocities not working properly). NOTE: This should not be used for moving multiple joints and setmodelstate
+%   should be used instead.
+%
+%   MATLAB USAGE: mex_mmap('setjointstate', A, uint32(0) ,[1,0]);
+%
+%   EXPLANATION: This takes in the zero based joint index as a single scalar which is uint32. The Joint State is just the angle and velocity.
+%
+%   -> RUNSIMULATION: This function runs the gazebo physics engine for specified number of steps and provides back the Link and Joint States at the steps specified
+%
+%   MATLAB USAGE: [LinkData, JointData] =  mex_mmap('runsimulation', A, JOINTIDS, JOINT_CONTROLS, ...
+%                                                     LINKIDS, LINK_WRENCHES, STEPS);
+%   EXPLANATION:
+%   A:                Stored Pointer
+%   STEPS:            Vector[Nx1 or 1xN]  providing number of steps for physics engine. It should start with zero and should be increasing and the last element provides the number of
+%                     steps the physics engine should take
+%   JOINTIDS:         zero based joint index vector for which controls are provided [nx1 or 1xn]. The indices are obtained from available names described above.
+%   JOINT_CONTROLS:   Matrix of [2x(nxN)] with each [2xn] matrix showing the Joint efforts at that step. The controls are constant in between two steps.#TODO Add interpolation techniques
+%   LINKIDS:          zero based link index vector for which link wrenches are provided [nx1 or 1xn]. The indices are obtained from available names described above.
+%   LINK_WRENCHES:    The Link wrenches are provided as [6x(nxN)]. Each [6xn] matrix provides wrenches for the set of links at that step.
+%
+%   If you do not want to apply jointids or joint controls you can replace them by empty matrix. This applies to link ids and wrenches too
+%   Example System: Double Pendulum where you want to control the two joints indexed 0, 1. We want to run the simulation for 1 second
+%   (Assuming physics timestep is 0.001 this is 1000 steps) with state data every 0.5 seconds. Also we assume that the joint effort is 0.1 for both joints in first half of the trajectory
+%   and -0.1 in second half of the trajectory. This is called from matlab as follows.
+%   [LinkData,JointData] = mex_mmap('runsimulation',A, uint32([0 1]), [0.1 -0.1; 0.1 -0.1], ...
+%                                   [], [], [0 500 1000]);
+%  NOTE: For more examples look at the examples from matlab_rosClient folder of the package
