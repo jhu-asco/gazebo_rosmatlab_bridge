@@ -159,14 +159,14 @@ class Data_struct
     Mmap<gazebo_rosmatlab_bridge::JointStates> memin2; //Receive Joint States
     Mmap<gazebo_rosmatlab_bridge::AvailableNames> memin3;//Receive Link and Joint names
 
-    Data_struct():memout1("/tmp/in_setmodelstate.tmp", 20000)//Will make a readonly mode #TODO
-                  ,memout2("/tmp/in_setjointstate.tmp",5000)  
-                         ,memout3("/tmp/in_simulationreq.tmp", 5000)
-                            ,memout4("/tmp/in_stringreq.tmp", 500)
-                              ,memout5("/tmp/in_physicsconfig.tmp",500)
-                               ,memin1("/tmp/out_linkstates.tmp", 50000)
-                               ,memin2("/tmp/out_jointstates.tmp", 50000)
-                               ,memin3("/tmp/out_names.tmp",5000)
+    Data_struct():memout1("/tmp/in_setmodelstate.tmp", 0)//Will make a readonly mode #TODO
+                  ,memout2("/tmp/in_setjointstate.tmp", 0)  
+                         ,memout3("/tmp/in_simulationreq.tmp", 0)
+                            ,memout4("/tmp/in_stringreq.tmp", 0)
+                              ,memout5("/tmp/in_physicsconfig.tmp",0)
+                               ,memin1("/tmp/out_linkstates.tmp", 0)
+                               ,memin2("/tmp/out_jointstates.tmp", 0)
+                               ,memin3("/tmp/out_names.tmp", 0)
   {
   }
 };
