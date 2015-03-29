@@ -25,8 +25,8 @@ S.sim = Gazebo_MatlabSimulator;
 S.sim.Configure(0.001,20);
 S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
 
-x0 = [0; 0; 0; 0];
-S.xf = [2.5; 2; -pi/2; 0];%Posn(x,y),Angle, Body Velocity
+x0 = [0; 0; pi/2; 0];
+S.xf = [2.5; 2; pi/2; 0];%Posn(x,y),Angle, Body Velocity
 S.x0 = x0;
 
 % initial control sequence

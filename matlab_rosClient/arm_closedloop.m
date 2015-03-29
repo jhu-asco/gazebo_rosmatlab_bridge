@@ -28,26 +28,19 @@ mex_mmap('setmodelstate',S.sim.Mex_data,'double_pendulum_with_base',[],...
 %%% Feedback Loop Starts %%%%
 x = x0;%Temporary state
 for i = 1:S.N
-  [u,S] = ArmPID(x,S);
-  [~, JointData] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, u, ...
-                                                    [], [], uint32([0,S.nofsteps]));
-if i == 1 %Simple Verification to ensure the actual starting position is same as the specified initial position (Can be removed in future #DEBUG )
-    checkx = [JointData(1,1:2) JointData(2,1:2)];
-    if norm(x0 - checkx) > 1e-3
-        disp('Model Did not start from initial condition');
-        disp(checkx);
-    end
-end
-x([1,3]) = JointData(:,3);
-x([2,4]) = JointData(:,4);
-%Map the joint angles to -pi to pi range
-A = rem(x(1:2),2*pi);
-A(A>pi) = A(A>pi)-2*pi;
-A(A<-pi) = A(A<-pi)+2*pi;
-x(1:2)= A;
-
-disp('xs:');
-disp(x');
+    [u,S] = ArmPID(x,S);
+    [~, JointData] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, u, ...
+        [], [], uint32([0,S.nofsteps]));
+    x([1,3]) = JointData(:,3);
+    x([2,4]) = JointData(:,4);
+    %Map the joint angles to -pi to pi range
+    A = rem(x(1:2),2*pi);
+    A(A>pi) = A(A>pi)-2*pi;
+    A(A<-pi) = A(A<-pi)+2*pi;
+    x(1:2)= A;
+    
+    disp('xs:');
+    disp(x');
 end
 
 

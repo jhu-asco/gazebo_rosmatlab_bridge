@@ -3,9 +3,15 @@ classdef Gazebo_MatlabSimulator < handle
     %Author Gowtham Garimella (ggarime1@jhu.edu)
     properties (Access = public)
         Available_Names = cell(1,2);%Helper Property which provides the available names to use
-        count_msgs = zeros(2,1);% Number of messages received so far in the order: Links, Models, Clock. 
+        %count_msgs = zeros(2,1);% Number of messages received so far in the order: Links, Models, Clock. 
         physxtimestep = 0.001;
         Mex_data; %Stored data for mex
+        LinkData;%Link Data is array of rigid body states
+        JointData;%Joint Data is 2xn with joint positions and velocities
+        Servos;
+        Escs;
+        ActuatedJoints;%Index array
+        ActuatedLinks;%Index array
         %mode = 'closedloop';%Can be either openloop or closedloop
     end
     methods (Access = public)
@@ -18,13 +24,20 @@ classdef Gazebo_MatlabSimulator < handle
             % Destructor.
             mex_mmap('delete',h.Mex_data);
         end
-        
-        function [LinkData, JointData] = RunSimulation(h,steps,function_handle)
-            time = h.physxtimestep*steps;
-            [linkids, bodywrenches, jointids, jointefforts] = feval(function_handle,time);
-            [LinkData, JointData] = mex_mmap('runsimulation',h.Mex_data, uint32(jointids)-1, jointefforts, ...
-                                                    uint32(linkids)-1, bodywrenches, uint32(steps));
+        function Step(h, ts, us_joints, us_links)
+            %Run the simulation of gazebo with given stepsize and tf.
+            %us_joints should be of size as ts with number of rows =
+            %nofactuated joints
+            %us_links should be a cell array of link wrenches applied.
+            % if us_joints or us_links is empty, then they are not applied
         end
+        
+%         function [LinkData, JointData] = RunSimulation(h,steps,function_handle)
+%             time = h.physxtimestep*steps;
+%             [linkids, bodywrenches, jointids, jointefforts] = feval(function_handle,time);
+%             [LinkData, JointData] = mex_mmap('runsimulation',h.Mex_data, uint32(jointids)-1, jointefforts, ...
+%                                                     uint32(linkids)-1, bodywrenches, uint32(steps));
+%         end
         function Configure(h,timestep,rate)
             if nargin == 2
                 rate = 20;
