@@ -10,6 +10,9 @@ classdef MatlabRigidBodyState < handle
         %Constructor
         function h  = MatlabRigidBodyState(input)
             if (nargin == 1)
+                if size(input,1) ~= 13
+                    input = input';
+                end
                 h.position = input(1:3);
                 h.orientation = [input(7);input(4:6)];
                 h.linearvelocity = input(8:10);

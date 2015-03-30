@@ -379,7 +379,7 @@ namespace gazebo
             ServoMap::iterator it = servo_map.find(jointeffort_msg.joint_ind[count]);
             if(it != servo_map.end())
             {
-              gzdbg<<"Found Servo!"<<endl;//#DEBUG
+              //gzdbg<<"Found Servo!"<<endl;//#DEBUG
               it->second.desired_target = jointeffort_msg.effort[count + nofjoints*(stepcount-1)];//Set the desired control
             }
             else

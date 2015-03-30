@@ -26,11 +26,11 @@ been provided in MATLAB Installation:
 \end{itemize}
 
 \section{Package installation}
-Clone the package in catkin workspace and run the
+Clone the package in catkin workspace and source the
 setup\_script.bash with the arguments as MATLAB\_ROOT and
 ROS\_WORKSPACE.
 \begin{Verbatim}[frame=single]
-Example Usage: setup_script /usr/local/MATLAB/R2014a ~/hydro_workspace
+Example Usage: source setup_script.bash /usr/local/MATLAB/R2014a ~/hydro_workspace
 \end{Verbatim}
 %\textasciitilde{}/hydro\_workspace 
 \section{Usage} 
@@ -174,9 +174,9 @@ There are some known bugs with this interface that need to be fixed.
  \item You can run the MATLAB scripts only when Gazebo is running. If not it
 will get stuck in some infinite loops and matlab should be forced to
 closed down 
-\item Some times mex interface throws an error (Stream not ready
-to be read). In this case, a temporary solution is to restart gazebo.
-This is caused by the memory maps not syncing properly and to be fixed
+%\item Some times mex interface throws an error (Stream not ready
+%to be read). In this case, a temporary solution is to restart gazebo.
+%This is caused by the memory maps not syncing properly and to be fixed
 \end{itemize}
 
 \end{document}

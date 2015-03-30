@@ -6,12 +6,10 @@ classdef Gazebo_MatlabSimulator < handle
         %count_msgs = zeros(2,1);% Number of messages received so far in the order: Links, Models, Clock. 
         physxtimestep = 0.001;
         Mex_data; %Stored data for mex
-        LinkData;%Link Data is array of rigid body states
-        JointData;%Joint Data is 2xn with joint positions and velocities
-        Servos;
-        Escs;
-        ActuatedJoints;%Index array
-        ActuatedLinks;%Index array
+        %LinkData;%Link Data is array of rigid body states
+        %JointData;%Joint Data is 2xn with joint positions and velocities
+        ActuatedJoints  = [];%Index array
+        ActuatedLinks = [];%Index array
         %mode = 'closedloop';%Can be either openloop or closedloop
     end
     methods (Access = public)
@@ -24,16 +22,71 @@ classdef Gazebo_MatlabSimulator < handle
             % Destructor.
             mex_mmap('delete',h.Mex_data);
         end
-%         function attachservo(h, jointindex, servogains, limits, control_type)
-%             mex_mmap('attachservo',h.Mex_data, jointindex, servogains, limits, control_type);
-%         end
-        %function Step(h, ts, us_joints, us_links)
-            %Run the simulation of gazebo with given stepsize and tf.
-            %us_joints should be of size as ts with number of rows =
-            %nofactuated joints
-            %us_links should be a cell array of link wrenches applied.
-            % if us_joints or us_links is empty, then they are not applied
-        %end
+         function attachservo(h, jointindices, servogains, limits, control_type)
+             %Attaches a servo to given joint indices 
+             %servogains: PID gains as 3x1 vector
+             %limits: [Integralterm_max; Integralterm_min; max_torque;
+             %min_torque]
+             %control_type: Position control(0), velocity control(1). In velocity
+             %control Derivative gain does not have any effect
+             if nargin <= 3
+                 control_type = 0;
+             end
+             if nargin <= 2
+                 limits = zeros(4,1);
+             end
+             for i = 1:length(jointindices)
+                mex_mmap('attachservo',h.Mex_data, jointindices(i)-1, servogains, limits, control_type);
+             end
+         end
+        function [LinkStates, JointState] = Step(h, deltat, us_joints, us_links)
+            %Run a single step of size (stepsize) of gazebo
+            % us_joints = torques[nofactuatedjointsx1];
+            % If servo is attached to the joint, the us_joint(i) becomes
+            % commanded position/velocity to servo
+            % us_links = cellarrayoflinkinputs[nofactuatedlinks];
+            jointids = uint32(h.ActuatedJoints-1);
+            if nargin == 4
+                linkids = uint32(h.ActuatedLinks-1);
+                linkinputs = zeros(6,length(h.ActuatedLinks));
+                for count = 1:size(linkinputs,2)
+                    linkinputs(count,:) = us_links{count}.getdata();
+                end
+            else
+                linkids = [];
+                linkinputs = [];
+            end
+            steps = uint32([0 round(deltat/h.physxtimestep)]);
+            [LinkData, JointState] = mex_mmap('runsimulation',h.Mex_data, jointids, us_joints, ...
+                                                     linkids, linkinputs, steps);
+            LinkStates = cell(size(LinkData,2));
+            for i = 1:size(LinkdData,2)
+                LinkStates{i} = MatlabRigidBodyState(LinkData(i,:));
+            end
+        end
+        function [LinkStates, JointStates] = StepTrajectory(h, ts, us_joints, us_links)
+            %This runs multiple steps at once
+            jointids = uint32(h.ActuatedJoints-1);
+            N = length(ts)-1;%Number of segments or nofcontrols
+            if nargin == 4
+                linkids = uint32(h.ActuatedLinks-1);
+                linkinputs = zeros(6,length(h.ActuatedLinks)*N);
+                for count = 1:size(linkinputs,2)
+                    linkinputs(count,:) = us_links{count}.getdata();
+                end
+            else
+                linkids = [];
+                linkinputs = [];
+            end
+            steps = uint32(ts);
+            [LinkData, JointStates] = mex_mmap('runsimulation',h.Mex_data, jointids, us_joints, ...
+                linkids, linkinputs, steps);
+            LinkStates = cell(size(LinkData,2));
+            
+            for i = 1:size(LinkdData,2)
+                LinkStates{i} = MatlabRigidBodyState(LinkData(i,:));
+            end
+        end
         
 %         function [LinkData, JointData] = RunSimulation(h,steps,function_handle)
 %             time = h.physxtimestep*steps;
