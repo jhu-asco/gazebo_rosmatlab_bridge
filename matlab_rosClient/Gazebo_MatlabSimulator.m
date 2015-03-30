@@ -24,13 +24,16 @@ classdef Gazebo_MatlabSimulator < handle
             % Destructor.
             mex_mmap('delete',h.Mex_data);
         end
-        function Step(h, ts, us_joints, us_links)
+%         function attachservo(h, jointindex, servogains, limits, control_type)
+%             mex_mmap('attachservo',h.Mex_data, jointindex, servogains, limits, control_type);
+%         end
+        %function Step(h, ts, us_joints, us_links)
             %Run the simulation of gazebo with given stepsize and tf.
             %us_joints should be of size as ts with number of rows =
             %nofactuated joints
             %us_links should be a cell array of link wrenches applied.
             % if us_joints or us_links is empty, then they are not applied
-        end
+        %end
         
 %         function [LinkData, JointData] = RunSimulation(h,steps,function_handle)
 %             time = h.physxtimestep*steps;

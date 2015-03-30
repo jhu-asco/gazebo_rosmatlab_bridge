@@ -116,6 +116,7 @@
 #include <gazebo_rosmatlab_bridge/JointState.h>
 #include <gazebo_rosmatlab_bridge/JointStates.h>
 #include "gazebo_rosmatlab_bridge/AvailableNames.h"
+#include "gazebo_rosmatlab_bridge/AddServo.h"
 #include "gazebo_rosmatlab_bridge/PhysicsEngineConfig.h"
 #include "gazebo_rosmatlab_bridge/RunSimulation.h"
 #include <gazebo_rosmatlab_bridge/BodyWrenches.h>
@@ -154,6 +155,7 @@ class Data_struct
     Mmap<gazebo_rosmatlab_bridge::RunSimulation> memout3; //Shared memory for sending simulation request
     Mmap<std_msgs::String> memout4;//Shared memory for sending reset request to gazebo
     Mmap<gazebo_rosmatlab_bridge::PhysicsEngineConfig> memout5;//Memory map for sending physics engine rate and timestep
+    Mmap<gazebo_rosmatlab_bridge::AddServo> memout6;//Memory map for sending physics engine rate and timestep
 
     Mmap<gazebo_msgs::LinkStates> memin1;//Receive Link States
     Mmap<gazebo_rosmatlab_bridge::JointStates> memin2; //Receive Joint States
@@ -161,12 +163,13 @@ class Data_struct
 
     Data_struct():memout1("/tmp/in_setmodelstate.tmp", 0)//Will make a readonly mode #TODO
                   ,memout2("/tmp/in_setjointstate.tmp", 0)  
-                         ,memout3("/tmp/in_simulationreq.tmp", 0)
-                            ,memout4("/tmp/in_stringreq.tmp", 0)
-                              ,memout5("/tmp/in_physicsconfig.tmp",0)
-                               ,memin1("/tmp/out_linkstates.tmp", 0)
-                               ,memin2("/tmp/out_jointstates.tmp", 0)
-                               ,memin3("/tmp/out_names.tmp", 0)
+                  ,memout3("/tmp/in_simulationreq.tmp", 0)
+                  ,memout4("/tmp/in_stringreq.tmp", 0)
+                  ,memout5("/tmp/in_physicsconfig.tmp",0)
+                  ,memout6("/tmp/in_attachservo.tmp",0)
+                  ,memin1("/tmp/out_linkstates.tmp", 0)
+                  ,memin2("/tmp/out_jointstates.tmp", 0)
+                  ,memin3("/tmp/out_names.tmp", 0)
   {
   }
 };
@@ -458,6 +461,58 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
       config_msg.realtimerate = mxGetScalar(prhs[3]);
 
       while(!d->memout5.Write(config_msg));//Write the topic until it succeeds
+    }
+    else if(!strcmp("attachservo",cmd))
+    {
+      if(nlhs != 0 && nrhs < 3)
+      {
+        mexErrMsgTxt("Have to send args as {cmd, Stored_Data, jointid, PID Gains[3x1], Limits[4x1], control_type}");
+      }
+      gazebo_rosmatlab_bridge::AddServo servo_msg;
+
+      servo_msg.joint_ind = uint32_t(round(mxGetScalar(prhs[2])));
+
+      //Set PID Gains
+      if(nrhs >=4 && mxIsDouble(prhs[3]))//Add length check #TODO
+      {
+        double *ptr = mxGetPr(prhs[3]);
+        servo_msg.gains[0] = ptr[0];
+        servo_msg.gains[1] = ptr[1];
+        servo_msg.gains[2] = ptr[2];
+      }
+      else
+      {
+        servo_msg.gains[0] = 20.0;
+        servo_msg.gains[1] = 1.0;
+        servo_msg.gains[2] = 20.0;
+      }
+
+      //Set Limits
+      if(nrhs >=5 && mxIsDouble(prhs[4]))//Add length check #TODO
+      {
+        double *ptr = mxGetPr(prhs[4]);
+        servo_msg.limits[0] = ptr[0];
+        servo_msg.limits[1] = ptr[1];
+        servo_msg.limits[2] = ptr[2];
+        servo_msg.limits[3] = ptr[3];
+      }
+      else
+      {
+        servo_msg.limits[0] = 100;
+        servo_msg.limits[1] = -100;
+        servo_msg.limits[2] = 100;
+        servo_msg.limits[3] = -100;
+      }
+      if(nrhs >= 6 && mxIsDouble(prhs[5]))
+      {
+        servo_msg.control_type = int8_t(mxGetScalar(prhs[5]));
+      }
+      else
+      {
+        servo_msg.control_type = 0;//Position control usual one
+      }
+      Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
+      while(!d->memout6.Write(servo_msg));//Write the topic until it succeeds
     }
   }
   else

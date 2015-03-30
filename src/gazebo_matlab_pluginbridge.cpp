@@ -40,6 +40,7 @@
 #include "gazebo_rosmatlab_bridge/PhysicsEngineConfig.h"
 #include "gazebo_rosmatlab_bridge/JointStates.h"
 #include "gazebo_rosmatlab_bridge/AvailableNames.h"
+#include "gazebo_rosmatlab_bridge/AddServo.h"
 #include "gazebo_rosmatlab_bridge/RunSimulation.h"
 #include "gazebo_rosmatlab_bridge/CompleteModelState.h"
 
@@ -61,6 +62,16 @@ namespace gazebo
 {
   class GazeboMatlabPlugin : public WorldPlugin
   {
+    struct ServoInfo{
+      common::PID pidcontroller;
+      double desired_target;
+      int control_type;//Position control 0; Velocity Control 1
+      ServoInfo():desired_target(0), control_type(0)
+      {
+      }
+    };
+
+    typedef std::map<int, ServoInfo> ServoMap;
     private:
       physics::WorldPtr world;//World Pointer for accessing correspoding links and models
       physics::PhysicsEnginePtr physicsEngine;
@@ -82,6 +93,7 @@ namespace gazebo
       Mmap<gazebo_rosmatlab_bridge::RunSimulation> memin3;//Shared memory for sending simulation req
       Mmap<std_msgs::String> memin4;//Shared memory for sending reset req
       Mmap<gazebo_rosmatlab_bridge::PhysicsEngineConfig> memin5;//Receiving physics config msgs
+      Mmap<gazebo_rosmatlab_bridge::AddServo> memin6;//Receive request to attach servo to a joint
 
       //Memout messages
       gazebo_rosmatlab_bridge::JointStates joint_states;
@@ -94,9 +106,10 @@ namespace gazebo
       //int interpolation_steps;//Number of steps to keep the control constant over %TODO Introduce some bezier or other kind of interpolation
 
       event::ConnectionPtr updateConnection1;
-      bool updatingjoint;
+      //bool updatingjoint;
       gazebo::common::Time worldupdate_time;
       //std::clock_t    start_worldupdate;
+      ServoMap servo_map;///< Map for storing servos attached to joints
 
       inline void FindLinkandJointStatus()
       {
@@ -320,11 +333,12 @@ namespace gazebo
       void WorldUpdate()
       {
         //gzdbg<<"U1"<<endl;
-        if(this->updatingjoint == true)
+        /*if(this->updatingjoint == true)
         {
           this->updatingjoint = false;
           return;
         }
+        */
 
         //gzdbg<<"Time :"<<(gazebo::common::Time::GetWallTime()-worldupdate_time)<<endl;
         worldupdate_time = gazebo::common::Time::GetWallTime();
@@ -361,14 +375,55 @@ namespace gazebo
           physics::JointPtr joint = joints[jointeffort_msg.joint_ind[count]];;
           if(joint)//Found joint
           {
-            //gzdbg<<"Joint Found"<<jointeffort_msg.joint_names[count]<<std::endl;//#DEBUG
-            joint->SetForce(0,jointeffort_msg.effort[count + nofjoints*(stepcount-1)]);
+            //Check if there is a servo attached to the joint
+            ServoMap::iterator it = servo_map.find(jointeffort_msg.joint_ind[count]);
+            if(it != servo_map.end())
+            {
+              gzdbg<<"Found Servo!"<<endl;//#DEBUG
+              it->second.desired_target = jointeffort_msg.effort[count + nofjoints*(stepcount-1)];//Set the desired control
+            }
+            else
+            {
+              //gzdbg<<"Joint Found"<<jointeffort_msg.joint_names[count]<<std::endl;//#DEBUG
+              joint->SetForce(0,jointeffort_msg.effort[count + nofjoints*(stepcount-1)]);
+            }
             /*
                if(physxcount == simulation_req.steps[stepcount])
                {
                gzdbg<<"Joint Effort: "<<jointeffort_msg.effort[count+nofjoints*(stepcount-1)]<<endl;
                }
              */
+          }
+        }
+        //Control all the servos irrespective of whether they are commanded or not:
+        for (ServoMap::iterator it=servo_map.begin(); it!=servo_map.end(); ++it)
+        {
+          physics::JointPtr joint = joints[it->first];;
+          if(joint)//Found joint
+          {
+            double error = 0.0;
+            ServoInfo &info = it->second;
+            if(info.control_type == 0)
+            {
+              //Position Control:
+              error = remainder(joint->GetAngle(0).Radian(),2*M_PI) - info.desired_target;
+              error = (error > M_PI)?(error - 2*M_PI):(error < -M_PI)?(error + 2*M_PI):error;//Map error into (pi to pi) region
+            }
+            else if(info.control_type == 1)
+            {
+              //Velocity Control
+              error = joint->GetVelocity(0) - info.desired_target;
+             // cout<<"Error: "<<joint->GetVelocity(0)<<"\t"<<info.desired_target<<endl;
+            }
+            double effort = info.pidcontroller.Update(error, common::Time(physicsEngine->GetMaxStepSize()));
+            /*{
+              double debugerrors[3];
+              info.pidcontroller.GetErrors(debugerrors[0],debugerrors[1],debugerrors[2]);
+              gzdbg<<"Errors: "<<debugerrors[0]<<"\t"<<debugerrors[1]<<"\t"<<debugerrors[2]<<"\t"<<endl;
+              gzdbg<<"Effort: "<<effort<<endl;
+            }
+            */
+            joint->SetForce(0, effort);
           }
         }
         //gazebo::common::Time currentTime = world->GetSimTime();
@@ -415,7 +470,7 @@ namespace gazebo
       }
        */
     public: 
-      GazeboMatlabPlugin() :WorldPlugin(), stepcount(0),physxcount(0), updatingjoint(false),
+      GazeboMatlabPlugin() :WorldPlugin(), stepcount(0),physxcount(0), //updatingjoint(false),
       memout1("/tmp/out_linkstates.tmp", 50000),//#TODO add a buffering system to the memout (Not needed right now)
       memout2("/tmp/out_jointstates.tmp", 50000),//#TODO add a buffering system to the memout (Not needed right now)
       memout3("/tmp/out_names.tmp", 5000),//#TODO add a buffering system to the memout (Not needed right now)
@@ -423,7 +478,8 @@ namespace gazebo
       memin2("/tmp/in_setjointstate.tmp", 5000),
       memin3("/tmp/in_simulationreq.tmp", 5000),
       memin4("/tmp/in_stringreq.tmp",500),
-      memin5("/tmp/in_physicsconfig.tmp",500)
+      memin5("/tmp/in_physicsconfig.tmp",500),
+      memin6("/tmp/in_attachservo.tmp",2000)
     {
     }
 
@@ -432,6 +488,7 @@ namespace gazebo
         gazebo_rosmatlab_bridge::CompleteModelState modelstate_msg;
         std_msgs::String string_msg;
         gazebo_rosmatlab_bridge::PhysicsEngineConfig physics_msg;
+        gazebo_rosmatlab_bridge::AddServo servo_msg;
         gazebo_rosmatlab_bridge::JointState jointstate_msg;
         gazebo_rosmatlab_bridge::AvailableNames names;
         names.link_names = names_links;
@@ -506,7 +563,15 @@ namespace gazebo
             {
               //  gzdbg<<"Restting world"<<endl;
               if(world)
+              {
                 world->Reset();
+              }
+              //Reset servos:
+              for (ServoMap::iterator it=servo_map.begin(); it!=servo_map.end(); ++it)
+              {
+                cout<<"Reset"<<endl;
+                it->second.pidcontroller.Reset();
+              }
             }
           }
           if(memin5.Read(physics_msg))
@@ -517,6 +582,26 @@ namespace gazebo
               physicsEngine->SetMaxStepSize(physics_msg.timestep);
               gzdbg<<"TimeStep: "<<physics_msg.timestep<<"\t Real Time Update Rate: "<<physics_msg.realtimerate<<endl;
             }
+          }
+          if(memin6.Read(servo_msg))
+          {
+            gzdbg<<"Received servo request"<<endl;//#DEBUG
+            ServoInfo &servo_info = servo_map[servo_msg.joint_ind];
+            if(servo_msg.control_type == 1)
+            {
+              servo_info.pidcontroller.Init(servo_msg.gains[0], servo_msg.gains[1], 0.0, servo_msg.limits[0], servo_msg.limits[1], servo_msg.limits[2], servo_msg.limits[3]);//No derivative Gain as we are applying Torques
+            }
+            else if(servo_msg.control_type == 0)
+            {
+              servo_info.pidcontroller.Init(servo_msg.gains[0], servo_msg.gains[1], servo_msg.gains[2], servo_msg.limits[0], servo_msg.limits[1], servo_msg.limits[2], servo_msg.limits[3]);
+            }
+            //servo_info.pidcontroller = common::PID(servo_msg.gains[0], servo_msg.gains[1], servo_msg.gains[2], servo_msg.limits[0], servo_msg.limits[1], servo_msg.limits[2], servo_msg.limits[3]);
+            //cout<<"Sero min command: "<<servo_msg.limits[3]<<endl;
+            //cout<<"Limits: "<<servo_msg.limits[0]<<"\t"<<servo_msg.limits[1]<<"\t"<<servo_msg.limits[2]<<"\t"<<servo_msg.limits[3]<<"\t"<<endl;
+            servo_info.control_type = servo_msg.control_type;
+
+            //servo_map[servo_msg.joint_ind] = servo_info;
+            //cout<<"Done!"<<endl;
           }
           if(memout3.Write(names))
           {

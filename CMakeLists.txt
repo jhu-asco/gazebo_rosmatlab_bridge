@@ -62,6 +62,7 @@ find_package(gazebo REQUIRED)
 	 PhysicsEngineConfig.msg
 	 RunSimulation.msg
 	 CompleteModelState.msg
+   AddServo.msg
  )
 
 ## Generate services in the 'srv' folder
