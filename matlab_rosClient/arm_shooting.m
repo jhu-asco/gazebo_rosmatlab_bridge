@@ -23,9 +23,9 @@ S.Qfs = sqrt(S.Qf);
 
 S.f = @arm_f;
 
-S.sim = Gazebo_MatlabSimulator;%Creates a Matlab Bridge using a helper class
+S.sim = GazeboMatlabSimulator;%Creates a Matlab Bridge using a helper class
 S.sim.Configure(0.001,100);%Configure the physics engine to have a time step of 1 milli second and real time rate is 100
-S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));%Converts the time into physics time steps
+S.steps = uint32(round((0:S.h:tf)/S.sim.PhysicsTimeStep));%Converts the time into physics time steps
 % For example if the open loop trajectory is 1 second with 4 segments then the time is [0, 0.25, 0.5, 0.75, 1] and the steps are [0 250 500 750 1000] 
 % since physics time step is 1 millisecond
 
@@ -106,13 +106,13 @@ function xs = sys_traj(x0, us, S)
 N = size(us, 2);
 jointids = [1 2];
 %xs(:,1) = x0;
-mex_mmap('reset',S.sim.Mex_data);
+mex_mmap('reset',S.sim.MexData);
 pause(0.01);
 
-mex_mmap('setmodelstate',S.sim.Mex_data,'double_pendulum_with_base',[],...
+mex_mmap('setmodelstate',S.sim.MexData,'double_pendulum_with_base',[],...
     uint32(jointids)-1,[x0(1:2);x0(3:4)]); %Set the initial Joint angles
 
-[~, JointData] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us, ...
+[~, JointData] = mex_mmap('runsimulation',S.sim.MexData, uint32(jointids)-1, us, ...
                                                     [], [], S.steps);% Run the simulation and collect the joint angles and velocities along the trajectory
 xs([1,3],1:(N+1)) = JointData(:,1:2:(2*(N+1)));
 xs([2,4],1:(N+1)) = JointData(:,2:2:(2*(N+1)));

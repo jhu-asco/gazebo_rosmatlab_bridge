@@ -21,7 +21,7 @@ S.Rs = sqrt(S.R);
 S.Qfs = sqrt(S.Qf);
 
 S.f = @arm_f;
-S.sim = Gazebo_MatlabSimulator;
+S.sim = GazeboMatlabSimulator;
 S.sim.Configure(0.001,100);
 S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
 

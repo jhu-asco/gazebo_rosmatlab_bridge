@@ -11,10 +11,10 @@ classdef MatlabLinkInput < handle
    
     methods
         function h = MatlabLinkInput(input)
-            if size(input,1) ~= 6
-                input = input';
-            end
             if (nargin == 1)
+                if size(input,1) ~= 6
+                    input = input';
+                end
                 h.force = input(1:3);
                 h.torque = input(4:6);
             end

@@ -21,9 +21,9 @@ S.Qs = sqrt(S.Q);
 S.Rs = sqrt(S.R);
 S.Qfs = sqrt(S.Qf);
 
-S.sim = Gazebo_MatlabSimulator;
+S.sim = GazeboMatlabSimulator;
 S.sim.Configure(0.001,20);
-S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
+S.steps = uint32(round((0:S.h:tf)/S.sim.PhysicsTimeStep));
 
 x0 = [0; 0; pi/2; 0];
 S.xf = [2.5; 2; pi/2; 0];%Posn(x,y),Angle, Body Velocity
@@ -63,7 +63,7 @@ clc
 us = lsqnonlin(@(us)arm_cost(us, S), us, lb, ub,options);
 disp('us');
 disp(us);
-S.sim.Configure(0.001,1);
+S.sim.Configure(0.001,10);
 pause;
 % % update trajectory
 xs = sys_traj(x0, us, S);
@@ -115,15 +115,15 @@ function xs = sys_traj(x0, us, S)
 
 N = size(us, 2);
 %xs(:,1) = x0;
-mex_mmap('reset',S.sim.Mex_data);
+mex_mmap('reset',S.sim.MexData);
 pause(0.01);
 %Set car to initial posn:
 modelposeandtwist = [x0(1:2)' 0.05 rpy2quat([x0(3), 0, 0])' x0(4) zeros(1,5)];%13x1
-mex_mmap('setmodelstate',S.sim.Mex_data,'Unicycle',modelposeandtwist);
+mex_mmap('setmodelstate',S.sim.MexData,'Unicycle',modelposeandtwist);
 pause(0.01);
 jointids = 1:4;%All Joints are actuated
 us = [us;us];%Copy us two times for both left and right hand side controls
-[LinkData,~] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us, ...
+[LinkData,~] = mex_mmap('runsimulation',S.sim.MexData, uint32(jointids)-1, us, ...
                                                 [], [], S.steps);
 xs(1:2,:) = LinkData(1:2,:);
 xs(3,:) = atan2(2*(LinkData(4,:).*LinkData(7,:) + LinkData(5,:).*LinkData(6,:)), 1 - ...

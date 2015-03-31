@@ -5,8 +5,8 @@ function f = car_closedloop()
 % Gowtham Garimella ggarime1(at)jhu.edu
 % Marin Kobilarov marin(at)jhu.edu
 
-S.sim = Gazebo_MatlabSimulator;%Creates a Matlab Bridge using a helper class
-S.sim.Configure(0.001,1);%Configure the physics engine to have a time step of 1 milli second and real time rate is 1
+h = GazeboMatlabSimulator;%Creates a Matlab Bridge using a helper class
+h.Configure(0.001,1);%Configure the physics engine to have a time step of 1 milli second and real time rate is 1
 
 %%% Problem Setting %%%%
 tf = 6;%Time to run the Controller for
@@ -15,39 +15,41 @@ S.xf = [2.5; -3; 0; 0.02];%Goal Posn(x,y),Angle, Body Velocity of car
 S.xi = x0(4);%Dynamic compensator for car controller 
 S.l = 0.5; %Length of the car
 frequency = 50;%Hz
-S.N = frequency*tf;%Feedback Freq = S.N/tfv c
-S.h = (tf/S.N);%Timestep
-S.nofsteps = round(tf/(S.N*S.sim.physxtimestep));%Internal computation of nof physics steps for one feedback step 
-%For example feedback running at 100 Hz (time step 0.01 sec) has 10 physics steps in it, since physics time step is 1 millisecond (configured above)
+h.ActuatedJoints = 1:4;%We are actuating all the joints
+S.h = (1/frequency);
+
+N = frequency*tf;%Feedback Freq = S.N/tf
+
+
 
 %Reset the Physics World
-mex_mmap('reset',S.sim.Mex_data);
-pause(0.01);% Wait for it take effect may not be necessary
+h.Reset();%Reset gazebo world
 
 %Attach servo to all the joints:
-mex_mmap('attachservo',S.sim.Mex_data, 0,[2.0;0.1;0.0],[2;-2;5;-5],1)
-mex_mmap('attachservo',S.sim.Mex_data, 2,[2.0;0.1;0.0],[2;-2;5;-5],1)
-mex_mmap('attachservo',S.sim.Mex_data, 1,[100.0;20.0;100.0],[20;-20;100;-100])
-mex_mmap('attachservo',S.sim.Mex_data, 3,[100.0;20.0;100.0],[20;-20;100;-100])
+h.AttachServo([1,3],[2.0;0.1;0.0],[2;-2;5;-5],1);
+h.AttachServo([2,4],[100.0;20.0;100.0],[20;-20;100;-100]);
 
 %Set car to initial posn:
-modelposeandtwist = [x0(1:2)' 0.05 rpy2quat([x0(3), 0, 0])' x0(4) zeros(1,5)];%13x1
-mex_mmap('setmodelstate',S.sim.Mex_data,'Unicycle',modelposeandtwist);
+modelstate = MatlabRigidBodyState;
+modelstate.position = [ x0(1); x0(2); 0.05];
+modelstate.orientation = rpy2quat([x0(3), 0, 0]);
+modelstate.linearvelocity(1) = x0(4);
+h.SetModelState('Unicycle',modelstate);
 pause(0.01);
 
 %%% Feedback Loop Starts %%%%
 x = x0;%Temporary state
-jointids = 1:4; %All the joints are actuated
-for i = 1:S.N
+for i = 1:N
   [u,S] = CarController(x,S); % u is the car driving torque and steering torque
   us = [u;u];%Copy us two times for both left and right hand side controls[4x1]
-  [LinkData, JointData] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us, ...
-      [], [], uint32([0,S.nofsteps]));
+  [LinkData, JointData] = h.Step((1/frequency), us);
+  
   %Write new x based on link and joint data:
-  x(1:2) = LinkData(1:2,2); %Posn of Body
-  rpy = quat2rpy(LinkData(4:7,2));
+  LinkState = LinkData{1};
+  x(1:2) = LinkState.position(1:2); %Posn of Body
+  rpy = quat2rpy(LinkState.orientation);
   x(3) = rpy(3); %Yaw of body
-  x(4) = LinkData(8,2);%Body velocity 
+  x(4) = LinkState.linearvelocity(1);%Body velocity 
   x(5:6) = JointData(:,6);%Steering angle and velocity 
   %Map joint angles to -pi to pi:
   A = rem(x(5),2*pi);
@@ -95,16 +97,6 @@ function [u,S] = CarController(x,S)
     disp('xbar: ');
     disp(atan2(v(2),v(1)));
     u = [20*S.xi; phi];%20 is the conversion from body velocity to joint velocity
-    %Since servos are attached to joints the commands are directly velocity
-    %and steering angle
-%     %Use PD Controllers to achieve desired steering angle and desired
-%     %velocity:
-%     u(1,1) = 5.0*(S.xi - x(4));%drivetorque = kp *error_velocity (P)
-%     u(2,1) = 1.0*(phi - x(5)) + 1.0*(-x(6));%steeringtorque using pid
-%     disp('x: ');
-%     disp(x);
-%     disp('u: ');
-%     disp(u);
 
 
 

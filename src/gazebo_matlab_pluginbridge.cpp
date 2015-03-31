@@ -569,7 +569,7 @@ namespace gazebo
               //Reset servos:
               for (ServoMap::iterator it=servo_map.begin(); it!=servo_map.end(); ++it)
               {
-                cout<<"Reset"<<endl;
+                //cout<<"Reset"<<endl;
                 it->second.pidcontroller.Reset();
               }
             }
@@ -585,7 +585,7 @@ namespace gazebo
           }
           if(memin6.Read(servo_msg))
           {
-            gzdbg<<"Received servo request"<<endl;//#DEBUG
+            //gzdbg<<"Received servo request"<<endl;//#DEBUG
             ServoInfo &servo_info = servo_map[servo_msg.joint_ind];
             if(servo_msg.control_type == 1)
             {

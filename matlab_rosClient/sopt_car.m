@@ -23,7 +23,7 @@ N = 10;
 tf = 3;
 S.dt = tf/N;
 
-S.sim = Gazebo_MatlabSimulator;
+S.sim = GazeboMatlabSimulator;
 S.sim.Configure(0.001,20);
 S.jointids = 1:4;
 for i=1:N
@@ -57,7 +57,7 @@ L = (x-S.xf)'*S.Qf*(x-S.xf)/2;
 % n = length(x0);
 % xs = zeros(n, N+1);
 % us = zeros(2,N);
-% mex_mmap('stringreq',S.sim.Mex_data,'worldreset');
+% mex_mmap('stringreq',S.sim.MexData,'worldreset');
 % pause(0.01);
 % xs(:,1) = x0;
 % nofsteps = S.dt/S.physxtimestep;
@@ -66,7 +66,7 @@ L = (x-S.xf)'*S.Qf*(x-S.xf)/2;
 %   us(:,i) = mvnrnd(pu.m, pu.S)' + K*(xs(:,i) - px.m);
 %   %Constant interpolation and repmat:
 %   us1 = repmat(us(:,i),2,1);%For both left and right wheels
-%   [LinkData,~] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us1, ...
+%   [LinkData,~] = mex_mmap('runsimulation',S.sim.MexData, uint32(jointids)-1, us1, ...
 %                                                 [], [], uint32([0,nofsteps]));
 %   xs(1:2,i+1) = LinkData(1:2,2);
 %   xs(3,i+1) = atan2(2*(LinkData(4,2).*LinkData(7,2) + LinkData(5,2).*LinkData(6,2)), 1 - ...

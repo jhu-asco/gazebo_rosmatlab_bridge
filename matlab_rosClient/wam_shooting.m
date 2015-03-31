@@ -21,9 +21,9 @@ S.Qs = sqrt(S.Q);
 S.Rs = sqrt(S.R);
 S.Qfs = sqrt(S.Qf);
 
-S.sim = Gazebo_MatlabSimulator;
+S.sim = GazeboMatlabSimulator;
 S.sim.Configure(0.001,20);
-S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
+S.steps = uint32(round((0:S.h:tf)/S.sim.PhysicsTimeStep));
 
 % initial state
 %x0 = [-5; -2; -1.2; 0; 0];
@@ -127,13 +127,13 @@ function xs = sys_traj(x0, us, S)
 %N = size(us, 2);
 jointids = 1:7;%All Joints are actuated
 
-mex_mmap('reset',S.sim.Mex_data);
+mex_mmap('reset',S.sim.MexData);
 pause(0.01);%Testing
 
 %modelposeandtwist = [0.05 -0.14 1 quat2rpy([0 1.57 0])' zeros(1,6)];
 %Can specify initial joint angles if you want
 
-[LinkData, ~] = mex_mmap('runsimulation',S.sim.Mex_data, uint32(jointids)-1, us, ...
+[LinkData, ~] = mex_mmap('runsimulation',S.sim.MexData, uint32(jointids)-1, us, ...
                                                 [], [], S.steps);
 xs = LinkData([1:3 8:13],:);%Tip Position and Tip Velocities
 %xs = sd_round(xs,4);%Round upto N significant digits
