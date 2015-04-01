@@ -1,0 +1,45 @@
+Searching 189 files for "sdf version="1.5">" (regex)
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/auv_body/auv_body.sdf:
+    1  <?xml version="1.0" ?>
+    2: <sdf version="1.5">
+    3    <model name="auv_body">
+    4      <link name="link">
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/auv_body/model.config:
+    2
+    3  <model name="auv_body">
+    4:     <sdf version="1.5">auv_body.sdf</sdf>
+    5  </model>
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/gripper/gripper.sdf:
+    1  <?xml version="1.0" ?>
+    2: <sdf version="1.5">
+    3      <model name="gripper">
+    4          <link name="palm">
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/gripper/model.config:
+    2
+    3  <model name="gripper">
+    4:     <sdf version="1.5">gripper.sdf</sdf>
+    5  </model>
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/orange_stripe/model.config:
+    2
+    3  <model name="orange_stripe">
+    4:     <sdf version="1.5">orange_stripe.sdf</sdf>
+    5  </model>
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/orange_stripe/orange_stripe.sdf:
+    1  <?xml version="1.0" ?>
+    2: <sdf version="1.5">
+    3      <model name="orange_stripe">
+    4        <static>true</static>
+
+/Users/msporyshev/Documents/projects/auv/gazebo-auv-sim/gazebo-plugins/torpedo/model.config:
+    2
+    3  <model name="torpedo">
+    4:     <sdf version="1.5">torpedo.sdf</sdf>
+    5  </model>
+
+7 matches across 7 files

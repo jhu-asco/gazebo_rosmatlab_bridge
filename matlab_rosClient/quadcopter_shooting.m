@@ -23,7 +23,7 @@ S.Qfs = sqrt(S.Qf);
 S.f = @arm_f;
 S.sim = GazeboMatlabSimulator;
 S.sim.Configure(0.001,100);
-S.steps = uint32(round((0:S.h:tf)/S.sim.physxtimestep));
+S.steps = uint32(round((0:S.h:tf)/S.sim.PhysicsTimeStep));
 
 % initial state
 %x0 = [-5; -2; -1.2; 0; 0];

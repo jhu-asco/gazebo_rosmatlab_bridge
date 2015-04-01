@@ -53,7 +53,7 @@ classdef GazeboMatlabSimulator < handle
                 linkids = uint32(h.ActuatedLinks-1);
                 linkinputs = zeros(6,length(h.ActuatedLinks));
                 for count = 1:size(linkinputs,2)
-                    linkinputs(count,:) = us_links{count}.getdata();
+                    linkinputs(:,count) = us_links{count}.getdata();
                 end
             else
                 linkids = [];

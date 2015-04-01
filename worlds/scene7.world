@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <!-- Water plane -->
+    <include>
+      <uri>model://water_scene</uri>
+    </include>
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 5 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>1 1 -1</direction>
+    </light>
+    <include>
+      <uri>model://auv_body</uri>
+    </include>
+    <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+      <!--joints>double_pendulum_with_base::upper_joint;double_pendulum_with_base::lower_joint</joint-->
+      <!--joints>simple_gripper::palm_left_finger;simple_gripper::palm_right_finger;simple_gripper::palm_riser</joints-->
+      <links>auv_body::link</links>
+    </plugin>
+  </world>
+</sdf>

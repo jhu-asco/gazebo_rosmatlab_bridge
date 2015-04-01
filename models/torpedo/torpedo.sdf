@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+<!-- This file is originated from gazebo_auv_sim package by Gigmus: https://github.com/gigimus/gazebo-auv-sim -->
+  <model name="torpedo">
+    <link name="link">
+      <gravity>false</gravity>
+      <inertial>
+        <mass>0.01</mass>
+      </inertial>
+      <pose>0 0 0 -1.54 0 0</pose>
+
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://torpedo/torpedo.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+        <script>
+          <name>Gazebo/Blue</name>
+        </script>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://torpedo/torpedo.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

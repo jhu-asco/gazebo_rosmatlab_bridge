@@ -1,2 +1,4 @@
 *.bak*
 models/roscamera
+models/modelcity/
+*.blend
