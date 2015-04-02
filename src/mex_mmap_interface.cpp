@@ -121,6 +121,7 @@
 #include "gazebo_rosmatlab_bridge/RunSimulation.h"
 #include <gazebo_rosmatlab_bridge/BodyWrenches.h>
 #include <gazebo_rosmatlab_bridge/CompleteModelState.h>
+#include <visualization_msgs/Marker.h>
 
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
@@ -139,7 +140,6 @@
 //Useful Links:
 //http://www.mathworks.com/matlabcentral/answers/uploaded_files/1750/simplefunction.cpp
 
-
 using namespace std;
 
 /** This class is used for storing data that needs to be saved even after returning the mex function.
@@ -156,6 +156,7 @@ class Data_struct
     Mmap<std_msgs::String> memout4;//Shared memory for sending reset request to gazebo
     Mmap<gazebo_rosmatlab_bridge::PhysicsEngineConfig> memout5;//Memory map for sending physics engine rate and timestep
     Mmap<gazebo_rosmatlab_bridge::AddServo> memout6;//Memory map for sending physics engine rate and timestep
+    Mmap<visualization_msgs::Marker> memout7;//Memory map for sending trajectories for drawing in gazebo
 
     Mmap<gazebo_msgs::LinkStates> memin1;//Receive Link States
     Mmap<gazebo_rosmatlab_bridge::JointStates> memin2; //Receive Joint States
@@ -167,6 +168,7 @@ class Data_struct
                   ,memout4("/tmp/in_stringreq.tmp", 0)
                   ,memout5("/tmp/in_physicsconfig.tmp",0)
                   ,memout6("/tmp/in_attachservo.tmp",0)
+                  ,memout7("/tmp/in_publishtrajectory.tmp",0)
                   ,memin1("/tmp/out_linkstates.tmp", 0)
                   ,memin2("/tmp/out_jointstates.tmp", 0)
                   ,memin3("/tmp/out_names.tmp", 0)
@@ -301,6 +303,44 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
       jointstatemsg.vel_angle.y = 0;
       jointstatemsg.vel_angle.z = 0;
       while(!d->memout2.Write(jointstatemsg));//Write the topic until it succeeds
+    }
+    else if(!strcmp("publishtrajectory",cmd))
+    {
+      if(nlhs != 0 && (nrhs>=3) &&(nrhs <=5) )
+      {
+        mexErrMsgTxt("Have to send args as {cmd, Stored_Data, data[3xn], id, modifyoradd(0/1)/delete(2)} and output none");
+      }
+      Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
+      visualization_msgs::Marker trajectory;//Create trajectory to publish
+      trajectory.type = trajectory.LINE_STRIP;//Type of trajectory is lines
+
+      int nofelems = mxGetNumberOfElements(prhs[2]);
+      if(nofelems > 0)
+      {
+        double *data = mxGetPr(prhs[2]);
+        assert(mxGetM(prhs[2]) == 3);
+        int nofcols = mxGetN(prhs[2]);
+        geometry_msgs::Point currentpoint;
+        printf("nofcols: %d\n",nofcols);
+        for(int count = 0;count < nofcols; count++)
+        {
+          currentpoint.x = data[(count*3)];
+          currentpoint.y = data[3*count+1];
+          currentpoint.z = data[3*count+2];
+          trajectory.points.push_back(currentpoint);
+          printf("currentpoint: %f\t%f\t%f\n",currentpoint.x,currentpoint.y,currentpoint.z);
+        }
+      }
+      if(nrhs >= 4)
+      {
+        trajectory.id = round(mxGetScalar(prhs[3]));
+      }
+      if(nrhs == 5)
+      {
+        trajectory.action = round(mxGetScalar(prhs[4]));//Set the action for the trajectory
+      }
+      printf("\nDone Loading points\n");
+      while(!d->memout7.Write(trajectory));//Write the topic until it succeeds
     }
     else if(!strcmp("reset",cmd))
     {

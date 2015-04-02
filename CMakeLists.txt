@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   gazebo_msgs
 	std_msgs
 	geometry_msgs
+	visualization_msgs
 	std_srvs
   roscpp
   std_msgs
@@ -19,6 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(Matlab REQUIRED)
 find_package(gazebo REQUIRED)
+find_package(OGRE)
 
 
 
@@ -85,6 +87,7 @@ find_package(gazebo REQUIRED)
   gazebo_msgs
   std_msgs
   geometry_msgs
+  visualization_msgs
  # std_srvs
  )
 
@@ -117,6 +120,12 @@ include_directories(
 	${MATLAB_INCLUDE_DIR}
 	${GAZEBO_INCLUDE_DIRS} 
 )
+if (OGRE_FOUND)
+  include_directories(
+  ${OGRE_INCLUDE_DIRS}
+  )
+ message("OGRE_INCLUDE_DIRS: ${OGRE_INCLUDE_DIRS}")
+endif (OGRE_FOUND)
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 ## Declare a cpp library
@@ -130,6 +139,9 @@ set(MEX_SOURCES mex_mmap)
 add_library(${PROJECT_NAME} src/gazebo_matlab_pluginbridge.cpp)
 add_library(gazebo_matlab_camera src/camera_matlab_plugin.cpp)
 
+if (OGRE_FOUND)
+  add_library(trajectory_visualizer src/trajectory_visualizer_plugin.cpp)
+endif (OGRE_FOUND)
 
 ## Declare a cpp executable
  #add_executable(gazebo_rosmatlab_bridge_node src/bridge_node.cpp)
@@ -146,6 +158,11 @@ add_dependencies(${PROJECT_NAME} gazebo_rosmatlab_bridge_generate_messages_cpp)
 
 target_link_libraries(mex_mmap ${MATLAB_LIBRARIES} ${catkin_LIBRARIES}) #Link to matlab libraries
 target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
+
+if (OGRE_FOUND)
+  target_link_libraries(trajectory_visualizer ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
+endif (OGRE_FOUND)
+
 target_link_libraries(gazebo_matlab_camera ${GAZEBO_LIBRARIES} CameraPlugin ${catkin_LIBRARIES})
 
 #############

@@ -3,7 +3,7 @@
   <world name="default">
     <!-- Ground Plane -->
     <include>
-      <uri>model://ground_plane</uri>
+      <uri>model://ground_plane_with_visual_plugin</uri>
     </include>
     <!--include>
       <uri>model://robocup09_spl_field</uri>
