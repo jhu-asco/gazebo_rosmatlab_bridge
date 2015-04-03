@@ -66,16 +66,20 @@ bodywrench{1} = MatlabLinkInput;
 
 
 % graphics
-gr = 0;
+gr = 1;
 G=[];
 if gr
-  axis equal
-
-  G = draw_rb([], s.p, s.R, 'b', dd);
-  hold on
-  axis([-2 2 -2 2 -2 5])
-  drawnow
-  view(3)
+    markerinfo1 = MarkerInfo;%Current Trajectory
+    markerinfo1.color = [0;0;1;1];%Blue
+    markerinfo1.id = 1;%Unique id to mark the trajectory
+    markerinfo2 = MarkerInfo;%Desired Trajectory
+    
+    markerinfo1.action = markerinfo1.MODIFY;
+    sim.PublishTrajectory(initialmodelstate.position,markerinfo1);
+    markerinfo1.action = markerinfo1.ADD;
+    markerinfo2.action = markerinfo2.MODIFY;
+    sim.PublishTrajectory(sd.p,markerinfo2);
+     markerinfo2.action = markerinfo2.ADD;
 end
 
 % position dynamics matrices
@@ -133,12 +137,11 @@ for t=h:h:tf,
   end
   
   % graphics
-  if gr
-    G = draw_rb(G, s.p, s.R, 'b', dd);    
-    plot3(s.p(1), s.p(2), s.p(3), 'b.','LineWidth',3)
-    plot3(sd.p(1), sd.p(2), sd.p(3), 'r.','LineWidth',3)
-    axis([-2 2 -2 2 -2 5])
-    drawnow
+  if gr 
+      if rem(t,5*h) == 0
+          sim.PublishTrajectory(LinkState{1}.position,markerinfo1);
+          sim.PublishTrajectory(sd.p,markerinfo2);
+      end
   end
   
 end

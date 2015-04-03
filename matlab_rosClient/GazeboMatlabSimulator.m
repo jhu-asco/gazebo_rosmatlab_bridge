@@ -22,26 +22,26 @@ classdef GazeboMatlabSimulator < handle
             % Destructor.
             mex_mmap('delete',h.MexData);
         end
-         function AttachServo(h, jointindices, servogains, limits, control_type)
-             %Attaches a servo to given joint indices 
-             %servogains: PID gains as 3x1 vector
-             %limits: [Integralterm_max; Integralterm_min; max_torque;
-             %min_torque]
-             %control_type: Position control(0), velocity control(1). In velocity
-             %control Derivative gain does not have any effect
-             if nargin <= 4
-                 control_type = 0;
-             end
-             if nargin <= 3
-                 limits = zeros(4,1);
-             end
-             if nargin <= 2
-                 servogains = [1;0;1];
-             end
-             for i = 1:length(jointindices)
+        function AttachServo(h, jointindices, servogains, limits, control_type)
+            %Attaches a servo to given joint indices
+            %servogains: PID gains as 3x1 vector
+            %limits: [Integralterm_max; Integralterm_min; max_torque;
+            %min_torque]
+            %control_type: Position control(0), velocity control(1). In velocity
+            %control Derivative gain does not have any effect
+            if nargin <= 4
+                control_type = 0;
+            end
+            if nargin <= 3
+                limits = zeros(4,1);
+            end
+            if nargin <= 2
+                servogains = [1;0;1];
+            end
+            for i = 1:length(jointindices)
                 mex_mmap('attachservo',h.MexData, jointindices(i)-1, servogains, limits, control_type);
-             end
-         end
+            end
+        end
         function [LinkStates, JointState] = Step(h, deltat, us_joints, us_links)
             %Run a single step of size (stepsize) of gazebo
             % us_joints = torques[nofactuatedjointsx1];
@@ -61,7 +61,9 @@ classdef GazeboMatlabSimulator < handle
             end
             steps = uint32([0 round(deltat/h.PhysicsTimeStep)]);
             [LinkData, JointState] = mex_mmap('runsimulation',h.MexData, jointids, us_joints, ...
-                                                     linkids, linkinputs, steps);
+                linkids, linkinputs, steps);
+            nofjoints = length(h.AvailableNames{2});
+            JointState = JointState(:,(nofjoints+1):(2*nofjoints));
             noflinks = length(h.AvailableNames{1});
             LinkStates = cell(noflinks,1);
             for i = 1:noflinks
@@ -136,6 +138,17 @@ classdef GazeboMatlabSimulator < handle
             
             mex_mmap('setmodelstate',h.MexData,model_name,modelstate,...
     jointinds,jointstates); %Set the Joint Angles without worrying about the pendulum position
+        end
+        function PublishTrajectory(h,data,markerinfo)
+            %Publish the trajectory:
+            if markerinfo.action == markerinfo.DELETE
+                %Delete the line:
+                mex_mmap('publishtrajectory',h.MexData,[],markerinfo.id,markerinfo.MODIFY);%Clear the line points
+                mex_mmap('publishtrajectory',h.MexData,[],markerinfo.id,markerinfo.DELETE);%Then Delete line
+            else
+                data(1:2,:) = 0.01*data(1:2,:);%Some scaling issue
+                mex_mmap('publishtrajectory',h.MexData, data, markerinfo.id, markerinfo.action, markerinfo.color);
+            end
         end
         function Reset(h)
             %Reset the Gazebo world

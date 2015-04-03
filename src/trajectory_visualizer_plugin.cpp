@@ -73,7 +73,9 @@ namespace gazebo
                 }
                 return;
               }
-              line->Clear();//Clear all the points
+
+              if(inputmsg.action == 0)
+                line->Clear();//Clear all the points if we are modifying the existing line rather than adding new points to the line
             }
             else
             {
@@ -84,8 +86,24 @@ namespace gazebo
               //No line exist create one:
               line = this->visual->CreateDynamicLine(RENDERING_LINE_STRIP);
               linemap[inputmsg.id] =  line;
-              //set material to r or g or b (#TODO Add proper color functionality)
-              if(inputmsg.color.r == 1)
+
+              Ogre::String matName = "rgb" + Ogre::StringConverter::toString(inputmsg.color.r)+Ogre::StringConverter::toString(inputmsg.color.g)+Ogre::StringConverter::toString(inputmsg.color.b)+Ogre::StringConverter::toString(inputmsg.color.a);
+              Ogre::MaterialPtr materialPtr = Ogre::MaterialManager::getSingleton().getByName(matName);
+              if(materialPtr.isNull())
+              {
+                gzdbg<<"Creating New Material"<<endl;
+                materialPtr = Ogre::MaterialManager::getSingleton().create(matName, 
+                    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                Ogre::ColourValue color(inputmsg.color.r, inputmsg.color.g, inputmsg.color.b, inputmsg.color.a);
+                materialPtr->setAmbient(color);
+                materialPtr->setDiffuse(color);
+                //Ogre::Pass
+                //materialPtr->setPointSize(200.0);//Thickness of line
+              }
+              line->setMaterial(matName);
+                            
+              //line->SetDiffuse(common::Color(inputmsg.color.r, inputmsg.color.g, inputmsg.color.b, inputmsg.color.a));
+              /*if(inputmsg.color.r == 1)
                 line->setMaterial("Gazebo/Red");
               else if(inputmsg.color.b == 1)
                 line->setMaterial("Gazebo/Blue");
@@ -93,6 +111,7 @@ namespace gazebo
                 line->setMaterial("Gazebo/Green");
               else
                 line->setMaterial("Gazebo/Red");//Default
+                */
 
               line->setVisibilityFlags(GZ_VISIBILITY_GUI);
               this->visual->SetVisible(true);

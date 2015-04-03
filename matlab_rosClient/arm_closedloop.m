@@ -30,8 +30,8 @@ x = x0;%Temporary state
 for i = 1:N
     [u,S] = ArmPID(x,S);
     [~, JointData] = h.Step((1/frequency), u);
-    x([1,3]) = JointData(:,3);
-    x([2,4]) = JointData(:,4);
+    x([1,3]) = JointData(:,1);
+    x([2,4]) = JointData(:,2);
     %Map the joint angles to -pi to pi range
     A = rem(x(1:2),2*pi);
     A(A>pi) = A(A>pi)-2*pi;

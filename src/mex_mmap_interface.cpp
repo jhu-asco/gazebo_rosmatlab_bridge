@@ -306,9 +306,9 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     }
     else if(!strcmp("publishtrajectory",cmd))
     {
-      if(nlhs != 0 && (nrhs>=3) &&(nrhs <=5) )
+      if(nlhs != 0 && (nrhs>=3) &&(nrhs <=6) )
       {
-        mexErrMsgTxt("Have to send args as {cmd, Stored_Data, data[3xn], id, modifyoradd(0/1)/delete(2)} and output none");
+        mexErrMsgTxt("Have to send args as {cmd, Stored_Data, data[3xn], id, modifyoradd(0/1)/delete(2), rgba[4x1]} and output none");
       }
       Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
       visualization_msgs::Marker trajectory;//Create trajectory to publish
@@ -335,9 +335,24 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
       {
         trajectory.id = round(mxGetScalar(prhs[3]));
       }
-      if(nrhs == 5)
+      if(nrhs >= 5)
       {
         trajectory.action = round(mxGetScalar(prhs[4]));//Set the action for the trajectory
+      }
+      if(nrhs >= 6)
+      {
+        double *data = mxGetPr(prhs[5]);
+        trajectory.color.r  = round(data[0]);
+        trajectory.color.g  = round(data[1]);
+        trajectory.color.b  = round(data[2]);
+        trajectory.color.a  = round(data[3]);
+      }
+      else
+      {
+        trajectory.color.r  = 1.0;
+        trajectory.color.g  = 0.0;
+        trajectory.color.b  = 0.0;
+        trajectory.color.a  = 0.0;
       }
       printf("\nDone Loading points\n");
       while(!d->memout7.Write(trajectory));//Write the topic until it succeeds

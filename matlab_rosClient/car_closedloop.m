@@ -6,14 +6,22 @@ function f = car_closedloop()
 % Marin Kobilarov marin(at)jhu.edu
 
 h = GazeboMatlabSimulator;%Creates a Matlab Bridge using a helper class
-h.Configure(0.001,1);%Configure the physics engine to have a time step of 1 milli second and real time rate is 1
+h.Configure(0.001,2);%Configure the physics engine to have a time step of 1 milli second and real time rate is 1
+viz = true; %Set visualization to true
+if viz == true
+    markerinfo1 = MarkerInfo;%Current Trajectory
+    markerinfo1.color = [0;0;1;1];%Blue
+    markerinfo1.id = 1;%Unique id to mark the trajectory
+    markerinfo2 = MarkerInfo;%Desired Trajectory
+end
 
 %%% Problem Setting %%%%
-tf = 20;%Time to run the Controller for
+tf = 25;%Time to run the Controller for
 x0  = [0;0;0;0.02]; %Posn(x,y),Angle, Body Velocity of car
 %S.xf = [2.5; -3; 0; 0.02];%Goal Posn(x,y),Angle, Body Velocity of car
 S.center = [0;0];
 S.radius = 2;
+S.skew = 1.0;
 S.omega = 0.3; %Angular velocity
 S.xi = x0(4);%Dynamic compensator for car controller 
 S.l = 0.5; %Length of the car
@@ -38,6 +46,15 @@ h.AttachServo([2,4],[1000.0;100.0;500.0],[100;-100;500;-500]);
  modelstate.position = [ x0(1); x0(2); 0.05];
  modelstate.orientation = rpy2quat([x0(3), 0, 0]);
  modelstate.linearvelocity(1) = x0(4);
+ if viz == true
+     markerinfo1.action = markerinfo1.MODIFY;
+     h.PublishTrajectory(modelstate.position,markerinfo1);
+     markerinfo1.action = markerinfo1.ADD;
+     S = Finalgoal(0,S);
+     markerinfo2.action = markerinfo2.MODIFY;
+     h.PublishTrajectory([S.xf(1);S.xf(2);S.wheelradius],markerinfo2);
+     markerinfo2.action = markerinfo2.ADD;
+ end
  h.SetModelState('Unicycle',modelstate);
  pause(0.01);
 
@@ -61,7 +78,13 @@ for i = 1:N
    rpy = quat2rpy(LinkState.orientation);
    x(3) = rpy(3); %Yaw of body
    x(4) = LinkState.linearvelocity(1)*cos(x(3)) + LinkState.linearvelocity(2)*sin(x(3));%Body velocity of car
-   steer(:,i) = JointData(:,6);
+   steer(:,i) = JointData(:,2);
+   if viz == true
+       if rem(i,5) == 0
+           h.PublishTrajectory(LinkState.position,markerinfo1);
+           h.PublishTrajectory([S.xf(1);S.xf(2);S.wheelradius],markerinfo2); 
+       end
+   end
 %   x(5:6) = JointData(:,6);%Steering angle and velocity 
   %Map joint angles to -pi to pi:
   xs(:,i) = x;
@@ -72,7 +95,7 @@ subplot(2,2,1),hold on, plot(ts, xs(1,:),'b'), legend('x');
 subplot(2,2,2),hold on, plot(ts, xs(2,:),'r'), legend('y');
 subplot(2,2,3),hold on, plot(ts,xs(3,:)*(180/pi),'g'), legend('theta(^o)');
 subplot(2,2,4),hold on, plot(ts, xs(4,:),'b'), plot(ts, uall(1,:),'r'), legend('vel','veld');
-figure; hold on, plot(xs(1,:),xs(2,:),'b'), plot(S.center(1) + S.radius*cos(S.omega*ts), S.center(2) + S.radius*sin(S.omega*ts),'r'), axis equal, legend('xvsy','xdvsyd');
+%figure; hold on, plot(xs(1,:),xs(2,:),'b'), plot(S.center(1) + S.radius*cos(S.omega*ts), S.center(2) + S.radius*sin(S.omega*ts),'r'), axis equal, legend('xvsy','xdvsyd');
 figure; hold on, plot(ts, steer(1,:),'r'), plot(ts,uall(2,:),'b'), legend('phi','phid');
 
 % function xnew = Cardynamics(x,u,S)
@@ -93,15 +116,15 @@ function [u,S] = CarController(x,S)
     %car
     %Output of the car is the position of wheels between axis:
     %Gains for virtual inputs:
-    kpv = 0.5;
-    kpvd = 2.0;
+    kpv = 3.0;
+    kpvd = 6.0;
     y = x(1:2);
     ydot = [x(4)*cos(x(3)); x(4)*sin(x(3))];
     yd = S.xf(1:2);
     ydotd = [S.xf(4)*cos(S.xf(3)); S.xf(4)*sin(S.xf(3))];
     v = kpv*(yd - y) + kpvd*(ydotd - ydot);%Gives the virtual input
-    disp('v:')
-    disp(v);
+    %disp('v:')
+    %disp(v);
     if abs(S.xi) > 0.01
         temp = (S.l/(S.xi^2));
     else
@@ -130,7 +153,7 @@ function [u,S] = CarController(x,S)
      S.xf(4) = S.radius*S.omega;%Constant angular velocity
      theta = rem(S.omega*t,2*pi);
      S.xf(3) = rem(theta + (pi/2),2*pi);
-     S.xf(1:2) = S.center + S.radius*[cos(theta);sin(theta)];
+     S.xf(1:2) = S.center + S.radius*[cos(theta);S.skew*sin(theta)];
 
 
 
