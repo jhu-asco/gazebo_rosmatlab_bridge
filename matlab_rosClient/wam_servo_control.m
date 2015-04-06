@@ -8,7 +8,7 @@ N = round(tf/h);
 sim.AttachServo(1:5,[100.0;20.0;100.0],[10;-10;50;-50]); 
 sim.AttachServo(6:7,[100.0;20.0;100.0],[10;-10;30;-30]);
 sim.ActuatedJoints = 1:7;
-us = [1;-1;1;-0.5;1;-1;1];%Desired Joint Angles
+us = [-1;-1;1;-0.5;1;-1;1];%Desired Joint Angles
 %Visualization:
 m = MarkerInfo;
 sim.PublishTrajectory([1.2462; 0; 0.7810],m);%Initialposition from foward kin

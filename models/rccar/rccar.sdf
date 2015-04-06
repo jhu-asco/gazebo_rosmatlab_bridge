@@ -7,7 +7,7 @@
       <pose>0.0 0 0 0 0 0</pose>
       <inertial>
         <pose>0.15 0 0.1 0 0 0</pose>
-        <mass>2.3</mass>
+        <mass>2.4</mass>
         <!-- will have to do xacro-->
         <inertia>
           <ixx>0.41</ixx>
@@ -500,7 +500,7 @@
         </dynamics>
       </axis>
     </joint>
-    <link name="hokuyo::link">
+    <!--<link name="hokuyo::link">
       <inertial>
         <mass>0.100000</mass>
         <inertia>
@@ -584,8 +584,8 @@
       <self_collide>0</self_collide>
       <kinematic>0</kinematic>
       <gravity>1</gravity>
-    </link>
-    <joint name="hokuyo_joint" type="revolute">
+    </link>-->
+    <!--joint name="hokuyo_joint" type="revolute">
       <child>hokuyo::link</child>
       <parent>carbody</parent>
       <axis>
@@ -595,6 +595,6 @@
           <lower>0.000000</lower>
         </limit>
       </axis>
-    </joint>
+    </joint-->
   </model>
 </sdf>

@@ -6,7 +6,7 @@ function f = car_closedloop()
 % Marin Kobilarov marin(at)jhu.edu
 
 h = GazeboMatlabSimulator;%Creates a Matlab Bridge using a helper class
-h.Configure(0.001,2);%Configure the physics engine to have a time step of 1 milli second and real time rate is 1
+h.Configure(0.001,1);%Configure the physics engine to have a time step of 1 milli second and real time rate is 1
 viz = true; %Set visualization to true
 if viz == true
     markerinfo1 = MarkerInfo;%Current Trajectory
@@ -17,14 +17,14 @@ end
 
 %%% Problem Setting %%%%
 tf = 25;%Time to run the Controller for
-x0  = [0;0;0;0.02]; %Posn(x,y),Angle, Body Velocity of car
+x0  = [0;-0.3;pi/6;0.02]; %Posn(x,y),Angle, Body Velocity of car
 %S.xf = [2.5; -3; 0; 0.02];%Goal Posn(x,y),Angle, Body Velocity of car
 S.center = [0;0];
 S.radius = 2;
 S.skew = 1.0;
 S.omega = 0.3; %Angular velocity
 S.xi = x0(4);%Dynamic compensator for car controller 
-S.l = 0.5; %Length of the car
+S.l = 0.3; %Length of the car
 S.wheelradius = 0.05;
 frequency = 50;%Hz
 h.ActuatedJoints = 1:4;%We are actuating all the joints
@@ -38,8 +38,8 @@ N = frequency*tf;%Feedback Freq = S.N/tf
 h.Reset();%Reset gazebo world
 
 %Attach servo to all the joints:
-h.AttachServo([1,3],[2.0;0.1;0.0],[2;-2;5;-5],1);
-h.AttachServo([2,4],[1000.0;100.0;500.0],[100;-100;500;-500]);
+h.AttachServo([1,3],[2.0;0.0;0.0],[2;-2;5;-5],1);
+h.AttachServo([2,4],[100.0;100.0;50.0],[100;-100;500;-500]);
 
 %Set car to initial posn:
  modelstate = MatlabRigidBodyState;
@@ -74,9 +74,9 @@ for i = 1:N
 %   
 %   %Write new x based on link and joint data:
    LinkState = LinkData{1};
-   x(1:2) = LinkState.position(1:2); %Posn of Body
    rpy = quat2rpy(LinkState.orientation);
    x(3) = rpy(3); %Yaw of body
+   x(1:2) = LinkState.position(1:2); %Posn of Body
    x(4) = LinkState.linearvelocity(1)*cos(x(3)) + LinkState.linearvelocity(2)*sin(x(3));%Body velocity of car
    steer(:,i) = JointData(:,2);
    if viz == true
@@ -117,7 +117,7 @@ function [u,S] = CarController(x,S)
     %Output of the car is the position of wheels between axis:
     %Gains for virtual inputs:
     kpv = 3.0;
-    kpvd = 6.0;
+    kpvd = 3.0;
     y = x(1:2);
     ydot = [x(4)*cos(x(3)); x(4)*sin(x(3))];
     yd = S.xf(1:2);
