@@ -137,7 +137,7 @@ add_library(mex_mmap SHARED src/mex_mmap_interface.cpp)
 set(MEX_SOURCES mex_mmap)
 
 add_library(${PROJECT_NAME} src/gazebo_matlab_pluginbridge.cpp)
-add_library(gazebo_matlab_camera src/camera_matlab_plugin.cpp)
+#add_library(gazebo_matlab_camera src/camera_matlab_plugin.cpp)
 
 if (OGRE_FOUND)
   add_library(trajectory_visualizer src/trajectory_visualizer_plugin.cpp)
@@ -163,7 +163,7 @@ if (OGRE_FOUND)
   target_link_libraries(trajectory_visualizer ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
 endif (OGRE_FOUND)
 
-target_link_libraries(gazebo_matlab_camera ${GAZEBO_LIBRARIES} CameraPlugin ${catkin_LIBRARIES})
+#target_link_libraries(gazebo_matlab_camera ${GAZEBO_LIBRARIES} CameraPlugin ${catkin_LIBRARIES})
 
 #############
 ## Install ##
