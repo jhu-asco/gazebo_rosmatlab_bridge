@@ -1,4 +1,5 @@
 function G = draw_rb(G, x, R, c, d)
+%DRAW_RB draw a rigid body at a given state
 
 x
 R

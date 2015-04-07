@@ -1,5 +1,5 @@
 function f = wam_shooting()
-% Example of trajectory optimization for a 
+%WAM_SHOOTING Example of trajectory optimization for a wam arm using GN shooting
 % WAM Model using shooting and least-squares Gauss Newton method
 %
 % Gowtham Garimella ggarime1(at)jhu.edu

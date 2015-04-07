@@ -1,7 +1,5 @@
 classdef MatlabLinkInput < handle
-    %MatlabLinkInput Creates a struct for storing link data force and
-    %torque
-    %   Detailed explanation goes here
+    %MatlabLinkInput Creates a struct for storing link data force and torque
     
     properties
         force = zeros(3,1); %Force applied to link
@@ -11,6 +9,7 @@ classdef MatlabLinkInput < handle
    
     methods
         function h = MatlabLinkInput(input)
+            %Create a struct from a vector(force;torque)
             if (nargin == 1)
                 if size(input,1) ~= 6
                     input = input';
@@ -20,6 +19,8 @@ classdef MatlabLinkInput < handle
             end
         end
         function output = getdata(h)
+            %Output as 6x1 vector of [force; torque]
+            %Ensure that the vectors force and torque are 3x1
             output = [h.force; h.torque];
         end
     end

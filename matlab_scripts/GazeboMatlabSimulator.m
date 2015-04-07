@@ -1,25 +1,21 @@
 classdef GazeboMatlabSimulator < handle
-    %Gazebo client which handles the communication with gazebo.
+    %Matlab client which handles the communication with Gazebo.
     %Author Gowtham Garimella (ggarime1@jhu.edu)
     properties (Access = public)
-        AvailableNames = cell(1,2);%Helper Property which provides the available names to use
-        %count_msgs = zeros(2,1);% Number of messages received so far in the order: Links, Models, Clock. 
-        PhysicsTimeStep = 0.001;
-        MexData; %Stored data for mex
-        %LinkData;%Link Data is array of rigid body states
-        %JointData;%Joint Data is 2xn with joint positions and velocities
-        ActuatedJoints  = [];%Index array
-        ActuatedLinks = [];%Index array
-        %mode = 'closedloop';%Can be either openloop or closedloop
+        AvailableNames = cell(1,2);%Helper Property which provides the available names to use. The first cell provides links available, second cell provides joints available
+        PhysicsTimeStep = 0.001;%Time step for running physics engine should be configured using Configure function
+        MexData; %Stored data for mex (Internal)
+        ActuatedJoints  = [];%Index of joints being actuated. (The index starts with 1 and is based on available names provided above) 
+        ActuatedLinks = [];%Index links being actuated. (The index is based on Availableindices)
     end
     methods (Access = public)
         function h = GazeboMatlabSimulator()
-            %Starting Mex File:
+            %Starts Matlab Gazebo bridge and provides available links and joints
             h.MexData = mex_mmap('new');
             [h.AvailableNames{1}, h.AvailableNames{2}] = mex_mmap('availablenames',h.MexData);
         end
         function delete(h)
-            % Destructor.
+            % Destructor. Should be called before running another bridge.
             mex_mmap('delete',h.MexData);
         end
         function AttachServo(h, jointindices, servogains, limits, control_type)
@@ -43,11 +39,14 @@ classdef GazeboMatlabSimulator < handle
             end
         end
         function [LinkStates, JointState] = Step(h, deltat, us_joints, us_links)
-            %Run a single step of size (stepsize) of gazebo
+            %Run a single step of size (stepsize) of gazebo with given controls
             % us_joints = torques[nofactuatedjointsx1];
             % If servo is attached to the joint, the us_joint(i) becomes
             % commanded position/velocity to servo
             % us_links = cellarrayoflinkinputs[nofactuatedlinks];
+            % us_links{i} should be of type MatlabLinkInput
+            % LinkStates{i} is of type MatlabRigidBodyState
+            % see also MATLABLINKINPUT (class) MATLABRIGIDBODYSTATE (class)
             jointids = uint32(h.ActuatedJoints-1);
             if nargin == 4
                 linkids = uint32(h.ActuatedLinks-1);
@@ -71,8 +70,8 @@ classdef GazeboMatlabSimulator < handle
             end
         end
         function [LinkStates, JointStates] = StepTrajectory(h, ts, us_joints, us_links)
-            %This runs multiple steps at once
-            %trajectory is represented (ts, xs) 
+            %This runs multiple steps at once and provides the link and joint states at all the times ts
+            % trajectory is represented (ts, xs) 
             % controls us are given as (us_joints, us_links)
             % If a trajectory has N segments then ts and xs are of size (N+1)
             % xs is LinkStates a cell array of (nofavailablelinksx(N+1));
@@ -109,14 +108,21 @@ classdef GazeboMatlabSimulator < handle
         end
 
         function Configure(h,timestep,rate)
+            % Configure the physics engine to run with time step 
+            % The rate is the how fast the physics engine should run
+            % compared to real time.
+            % For example rate = 5 implies, the physics engine tries to run
+            % 5 times faster than real time. Although this is bounded by
+            % the resources available.
             if nargin == 2
-                rate = 20;
+                rate = 1;
             end
             rate = rate/timestep;%Frequency of physics engine
             mex_mmap('configurephysics',h.MexData,timestep,rate);
             h.PhysicsTimeStep = timestep;
         end
         function SetModelState(h,model_name, modelstate_, jointstates, jointinds)
+            %Set the Model state(Pose) and joint angles of the joints
             %If joints are not set, then set only modelstate
             % If only joints are set, set modelstate = [];
             % if jointinds are same as actuated joints, then leave out

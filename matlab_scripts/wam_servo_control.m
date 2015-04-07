@@ -4,8 +4,8 @@ sim = GazeboMatlabSimulator;
 sim.Reset;
 tf = 20;
 h = 0.1;%Step for only visualization as servo control is happening at 1Khz in plugin
-N = round(tf/h);
-sim.AttachServo(1:5,[300.0;20.0;300.0],[10;-10;100;-100]); 
+N = round(tf/h);%Number of steps to run
+sim.AttachServo(1:5,[300.0;20.0;300.0],[10;-10;500;-500]); %Attach servos for joint angle control
 sim.AttachServo(6:7,[100.0;20.0;100.0],[10;-10;30;-30]);
 sim.ActuatedJoints = 1:7;
 us = [-1;-1;1;-0.5;1;-1;1];%Desired Joint Angles
@@ -15,8 +15,8 @@ sim.PublishTrajectory([1.2462; 0; 0.7810],m);%Initialposition from foward kin
 m.action = m.ADD;
 uall = zeros(7,N);
 for i = 1:N
-    [LinkData,JointData] = sim.Step(h,us);
-    sim.PublishTrajectory(LinkData{1}.position,m);
+    [LinkData,JointData] = sim.Step(h,us);%Run simulation. Servo control is happening with desired joint angles as us
+    sim.PublishTrajectory(LinkData{1}.position,m);%Publish the current end effector position.
     uall(:,i) = JointData(1,:)';
 end
 figure; 

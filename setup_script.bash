@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ "$#" -ne 2 ]] 
 	then
-	echo "Usage: setup_script.bash [MATLAB ROOT DIRECTORY: For example /usr/local/matlab/r2014a] [ROS_WORKSPACE: For example ~/hydro_workspace]"
+	echo "Usage: source setup_script.bash [MATLAB ROOT DIRECTORY: For example /usr/local/matlab/r2014a] [ROS_WORKSPACE: For example ~/hydro_workspace]"
 	exit
 fi
 PKG_FULL=`rospack find gazebo_rosmatlab_bridge`
@@ -14,4 +14,4 @@ roscd
 cd ..
 catkin_make
 cd devel/lib
-ln -s $PWD/mex_mmap.mexa64 $PKG_FULL/matlab_rosClient/mex_mmap.mexa64 
+ln -s $PWD/mex_mmap.mexa64 $PKG_FULL/matlab_scripts/mex_mmap.mexa64 

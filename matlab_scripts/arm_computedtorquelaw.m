@@ -1,5 +1,5 @@
 function f = arm_test()
-% EN530.678 HW#3 supplementary 
+%ARM_COMPUTEDTORQUELAW Controls 2 link arm using Computed Torque Control law
 % simulation of a two-link manipulator 
 %
 % M. Kobilarov

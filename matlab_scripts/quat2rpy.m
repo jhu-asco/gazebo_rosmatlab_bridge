@@ -1,5 +1,5 @@
 function rpy = quat2rpy(q)
-%Converts the quaternion in the form(q0 + q1 i + q2 j + q3 k into the roll
+%QUAT2RPY Converts the quaternion in the form(q0 + q1 i + q2 j + q3 k into the roll pitch yaw
 %pitch yaw (ZYX convention) other conventions can be supported in later
 %versions. q is nx4 matrix output in radians
 if size(q,2) ~= 4

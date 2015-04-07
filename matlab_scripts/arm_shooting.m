@@ -1,5 +1,5 @@
 function f = arm_shooting()
-% Example of trajectory optimization for a 
+%ARM_SHOOTING Example of trajectory optimization for 2 link arm using GN shooting
 % double pendulum model using shooting and least-squares Gauss Newton method
 %
 % Gowtham Garimella ggarime1(at)jhu.edu

@@ -1,6 +1,5 @@
 classdef MarkerInfo <handle
-    %MarkerInfo Provides information about color, id etc of the line being
-    %published
+    %MarkerInfo Provides information about color, id etc of the line being published
     properties (Constant)
         MODIFY=0;
         ADD=1;

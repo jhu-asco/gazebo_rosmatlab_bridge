@@ -131,6 +131,8 @@ template <class T=double>class Mmap {
 
 		uint8_t Status()
 		{
+      if(fd <=0)
+        return 2;//Not available to read or write since the stream could not be opened
 			return map[0];
 		}
 

@@ -4,7 +4,7 @@
 \usepackage{fancyvrb}
 
 %opening
-\title{Gazebo Matlab Bridge using Ros serialization \\V1.0} \label{gazebo-matlab-bridge-using-ros-serialization}
+\title{Gazebo MATLAB Bridge using Ros serialization \\V1.0} \label{gazebo-matlab-bridge-using-ros-serialization}
 \author{Gowtham Garimella}
 
 \begin{document}
@@ -14,14 +14,13 @@
 
 \section{Overview}
 This package provides a gazebo plugin and a mex interface for fast
-communication between matlab and Gazebo. The mex interface provides fast
+communication between MATLAB and Gazebo. The mex interface provides fast
 access to link and joint states; easy application of link and joint
-efforts; way to set model and joint states. Various matlab examples have
-been provided in MATLAB Installation: 
+efforts; way to set model and joint states. 
 \subsection{Prerequisites:}
 \begin{itemize}
  \item  ros-hydro 
- \item Gazebo 
+ \item Gazebo 1.9
  \item ros-hydro-gazebo-packages
 \end{itemize}
 
@@ -36,25 +35,44 @@ Example Usage: source setup_script.bash /usr/local/MATLAB/R2014a ~/hydro_workspa
 \section{Usage} 
 To use the bridge, first run the gazebo with one of the world files provided in ``worlds''
 folder. This should load an example model in gazebo with the required
-plugin. Then you can run one of the matlab scripts provided to control
-the models. Some example pairs of world files and corresponding matlab
-scripts are provided below: 
-\begin{itemize}
- \item scene1\_obstacle, scene1: arm\_shooting.m, arm\_closedloop.m 
- \item scene2: car\_shooting.m, sopt\_car.m 
- \item scene3: wam\_shooting.m 
- \item scene4: quadcopter\_shooting.m
-\end{itemize}
-Additional scenes are provided for future applications. To load the
+plugin. Then you can run one of the MATLAB scripts provided to control
+the models. For a simple example run arm\_closedloop.m and corresponding scene1.world for understanding how plugin works. To load the
 world file with gazebo, you can run either of these commands: 
 \begin{Verbatim}[frame=single]
  roslaunch gazebo_rosmatlab_bridge basic.launch scene:=scene1 
- ///scene1 can be replaced by any of the scenes above 
+ ///scene1 can be replaced by any of the scenes from world folder
 		  OR
  ///Goto the worlds folder and run:
  gazebo scene1.world #Will load the world file directly
 \end{Verbatim}
+\textbf{NOTE: Run Gazebo before running MATLAB script always.}
 
+\subsection{Gazebo Plugin Usage}
+The world plugin to connect MATLAB with Gazebo is specified as:
+\small
+\begin{Verbatim}[frame=single]
+ <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+    <joints>rear_left_wheel_joint;base_to_steeringblock1;rear_right_wheel_joint</joints>
+    <links>carbody</links>
+  </plugin>
+\end{Verbatim}
+\normalsize
+The joints of interest for the control problem are specified in a semicolon separated string format. Similarly links are also provided in the same format. If there are multiple links/joints with same name, full scoped names such as (rccar::rear\_left\_wheel\_joint) can be used to distinguish them. When MATLAB client is started, these links and joints show up as ``Available\_Names'' in the GazeboMatlabSimulator class property.
+
+A visual plugin is also provided which allows publishing of desired and current trajectories of different links from MATLAB to Gazebo. This plugin should be loaded in the visual region of a link description in a static model such as ground. See ``models/ground\_plane\_with\_visual\_plugin/model.sdf'' for an example on how to use the visual plugin.
+
+\subsection{MATLAB Documentation}
+MATLAB scripts to control gazebo models are provided in matlab\_scripts folder. The documentation for the folder and helper classes can be found in ``docs/matlab\_documentation'' folder.
+The description of the documentation files is as follows:
+\begin{itemize}
+ \item Contents\_report.html:	Description of the files in the matlab\_scripts folder and what they do
+ \item GazebomatlabSimulator\_doc.html:	Documentation of the various functions and properties for the bridge between MATLAB and Gazebo
+ \item MatlabLinkInput\_doc.html		Documentation of Link input class
+ \item MatlabRigidBodyState\_doc.html	Documentation of the Rigid body state class
+\end{itemize}
+
+These files should be opened from inside MATLAB for the hyperlinks to work properly. For control examples look at the section of examples under ``Closed Loop Controllers'' section. The following section is only for advanced users and is not necessary for students interested in just using the interface.
+  
 \subsection{Mex Documentaion (Created from the source
 file):}\label{mex-documentaion-created-from-the-source-file}
 
@@ -159,12 +177,12 @@ provides a pointer to be stored and passed on later.
     
     \textit{Example System:} Double Pendulum where you want to control the two joints indexed 0, 1. We want to run the simulation for 1 second   
     (Assuming physics timestep is 0.001 this is 1000 steps) with state data every 0.5 seconds. Also we assume that the joint effort is 0.1 for both joints in first half of the trajectory
-    and -0.1 in second half of the trajectory. This is called from matlab as follows.
+    and -0.1 in second half of the trajectory. This is called from MATLAB as follows.
     \begin{Verbatim}[frame=single]
     [LinkData,JointData] = mex_mmap('runsimulation',A, uint32([0 1]), ...
 			         [0.1 -0.1; 0.1 -0.1], [], [], [0 500 1000]);
     \end{Verbatim}
-  NOTE: For more examples look at the examples from matlab\_rosClient folder of the package
+  NOTE: For more examples look at the examples from matlab\_scripts folder of the package
 \end{itemize}
 
 \subsection{KNOWN BUGS:}\label{known-bugs}
@@ -172,7 +190,7 @@ provides a pointer to be stored and passed on later.
 There are some known bugs with this interface that need to be fixed. 
 \begin{itemize}
  \item You can run the MATLAB scripts only when Gazebo is running. If not it
-will get stuck in some infinite loops and matlab should be forced to
+will get stuck in some infinite loops and MATLAB should be forced to
 closed down 
 %\item Some times mex interface throws an error (Stream not ready
 %to be read). In this case, a temporary solution is to restart gazebo.

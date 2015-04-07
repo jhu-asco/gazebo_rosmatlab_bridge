@@ -184,7 +184,7 @@ Benjamin Aaron Blumer (at) gmail
         <limit>
           <lower>-2.600000</lower>
           <upper>2.600000</upper>
-          <effort>30.000000</effort>
+          <effort>100.000000</effort>
           <velocity>2.000000</velocity>
         </limit>
         <dynamics>
@@ -249,7 +249,7 @@ Benjamin Aaron Blumer (at) gmail
         <limit>
           <lower>-1.97</lower>
           <upper>1.970000</upper>
-          <effort>30.000000</effort>
+          <effort>70.000000</effort>
           <velocity>2.000000</velocity>
         </limit>
         <dynamics>

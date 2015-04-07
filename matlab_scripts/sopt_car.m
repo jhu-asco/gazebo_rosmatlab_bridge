@@ -1,4 +1,5 @@
 function f = sopt_car
+%SOPT_CAR Optimization of rccar
 
 S.n =4;
 S.c=2;

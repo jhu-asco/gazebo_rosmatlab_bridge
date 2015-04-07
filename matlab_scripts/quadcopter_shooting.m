@@ -1,5 +1,5 @@
 function f = quadcopter_shooting()
-% Example of trajectory optimization for a 
+%QUADCOPTER_SHOOTING Example of trajectory optimization for a quadrotor using GN shooting
 % car-like model using shooting and least-squares Gauss Newton method
 %
 % Marin Kobilarov marin(at)jhu.edu

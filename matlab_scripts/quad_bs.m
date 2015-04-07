@@ -1,11 +1,13 @@
 function f = quad_bs()
-% Demonstration of nonlinear trajectory tracking control of underactuated
+%QUAD_BS Demonstration of nonlinear trajectory tracking control of a quadrotor system using backstepping controller
 % systems such as a quadrotor. 
 %
 % See paper M. Kobilarov, "Trajectory tracking of a class of underactuated
 % systems with external disturbances", 2013
 %
 % Author: Marin Kobilarov, marin(at)jhu.edu, 2013
+%
+%  Modified : Gowtham G
 
 
 clear 
@@ -55,12 +57,13 @@ ts = [];
 %Gazebo Matlab Interface:
 sim = GazeboMatlabSimulator;
 sim.ActuatedLinks = [1];
+%Set the initial state of quadrotor
 initialmodelstate = MatlabRigidBodyState;
 initialmodelstate.position = s.p;
 initialmodelstate.orientation = initialquat;
 %Initial velocity etc are 0.
 sim.SetModelState('quadrotor',initialmodelstate);
-sim.Configure(0.001,1);
+sim.Configure(0.001,1);%Set the physics engine to run at 1Khz
 %Helper variable: 
 bodywrench{1} = MatlabLinkInput;
 
@@ -74,12 +77,12 @@ if gr
     markerinfo1.id = 1;%Unique id to mark the trajectory
     markerinfo2 = MarkerInfo;%Desired Trajectory
     
-    markerinfo1.action = markerinfo1.MODIFY;
+    markerinfo1.action = markerinfo1.MODIFY;%Add initial state to trajectory
     sim.PublishTrajectory(initialmodelstate.position,markerinfo1);
     markerinfo1.action = markerinfo1.ADD;
-    markerinfo2.action = markerinfo2.MODIFY;
+    markerinfo2.action = markerinfo2.MODIFY;%Add desired state
     sim.PublishTrajectory(sd.p,markerinfo2);
-     markerinfo2.action = markerinfo2.ADD;
+    markerinfo2.action = markerinfo2.ADD;
 end
 
 % position dynamics matrices
@@ -114,7 +117,8 @@ for t=h:h:tf,
   %Set the link input to gazebo:
   bodywrench{1}.force = [0;0;s.u];
   bodywrench{1}.torque = T;
-  [LinkState,~] = sim.Step(h,[],bodywrench);
+  [LinkState,~] = sim.Step(h,[],bodywrench);%Run simulation with given link input
+  %Set new state based on link data obtained from simulation
   s.p = LinkState{1}.position;
   s.R = quat2mat(LinkState{1}.orientation);
   s.v = LinkState{1}.linearvelocity;
@@ -139,6 +143,8 @@ for t=h:h:tf,
   % graphics
   if gr 
       if rem(t,5*h) == 0
+          %Publish the current state at 1/5 the frequency of the controller
+          %(20 Hz)
           sim.PublishTrajectory(LinkState{1}.position,markerinfo1);
           sim.PublishTrajectory(sd.p,markerinfo2);
       end

@@ -1,5 +1,5 @@
 function mex_mmap
-%MEX_MMAP Provides bridge between gazebo and matlab
+%MEX_MMAP Provides bridge between gazebo and MATLAB (Mex library)
 % This file provides a mex interface for communicating with Gazebo. This file should be used along with the world plugin gazebo_rosmatlab_bridge
 % to complete the connection with gazebo. This interface works by calling string arguments for completing specific actions.
 % The supported string arguments and example usages are provided below:

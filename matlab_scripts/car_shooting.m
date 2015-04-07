@@ -1,5 +1,5 @@
 function f = gazebocar_shooting()
-% Example of trajectory optimization for a 
+%CAR_SHOOTING Example of trajectory optimization for a rccar using GN shooting
 % WAM Model using shooting and least-squares Gauss Newton method
 %
 % Gowtham Garimella ggarime1(at)jhu.edu
