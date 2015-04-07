@@ -64,14 +64,36 @@ A visual plugin is also provided which allows publishing of desired and current 
 \subsection{MATLAB Documentation}
 MATLAB scripts to control gazebo models are provided in matlab\_scripts folder. The documentation for the folder and helper classes can be found in ``docs/matlab\_documentation'' folder.
 The description of the documentation files is as follows:
-\begin{itemize}
- \item Contents\_report.html:	Description of the files in the matlab\_scripts folder and what they do
- \item GazebomatlabSimulator\_doc.html:	Documentation of the various functions and properties for the bridge between MATLAB and Gazebo
- \item MatlabLinkInput\_doc.html		Documentation of Link input class
- \item MatlabRigidBodyState\_doc.html	Documentation of the Rigid body state class
-\end{itemize}
 
-These files should be opened from inside MATLAB for the hyperlinks to work properly. For control examples look at the section of examples under ``Closed Loop Controllers'' section. The following section is only for advanced users and is not necessary for students interested in just using the interface.
+     \begin{table}[h!]
+	\begin{tabular}{|p{0.3\textwidth}|p{0.6\textwidth}|}
+	  \hline\\
+	  Contents\_report.html & Description of the files in the matlab\_scripts folder and what they do\\ \hline
+	  GazebomatlabSimulator\_doc.html & Documentation of the various functions and properties for the bridge between MATLAB and Gazebo\\ \hline
+	   MatlabLinkInput\_doc.html & Documentation of Link input class \\ \hline
+	   MatlabRigidBodyState\_doc.html & Documentation of the Rigid body state class\\ \hline
+	\end{tabular}
+      \end{table}
+
+These files should be opened from inside MATLAB for the hyperlinks to work properly. For control examples look at the section of examples under ``Closed Loop Controllers'' section. 
+
+\subsection{World Files description}
+     \begin{table}[h!]
+	\begin{tabular}{|p{0.2\textwidth}|p{0.4\textwidth}|p{0.4\textwidth}|}
+	  \hline\\
+	  World File & Description & Matlab Script \\ \hline \hline
+	  scene1.world & Double Pendulum & arm\_closedloop.m/arm\_computedtorquelaw.m\\ \hline
+	  scene2.world & Rcccar model & car\_closedloop.m \\ \hline
+	  scene3.world & Wam arm & wam\_servo\_control.m \\ \hline
+	  scene4.world & Quadcopter & quad\_bs.m \\ \hline
+	  scene5.world & Youbot & \\ \hline
+	  scene6.world & Quadcopter with 2DOF arm & \\ \hline
+	  scene7.world & AUV vehicle & \\ \hline
+	  scene8.world & Satellite & satellite\_test.m\\ \hline
+	\end{tabular}
+      \end{table}
+      
+The following section is only for advanced users and is not necessary for students interested in just using the interface.
   
 \subsection{Mex Documentaion (Created from the source
 file):}\label{mex-documentaion-created-from-the-source-file}
