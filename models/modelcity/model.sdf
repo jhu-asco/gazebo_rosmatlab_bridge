@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="model_city">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://modelcity/meshes/city-cool.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual_1">
+        <cast_shadows>false</cast_shadows>
+        <plugin name="trajectory_visualizer" filename="libtrajectory_visualizer.so"/>
+        <geometry>
+          <mesh>
+            <uri>model://modelcity/meshes/city-cool.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

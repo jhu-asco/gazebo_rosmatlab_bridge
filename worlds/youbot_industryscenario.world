@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 5 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>1 1 -1</direction>
+    </light>
+    <!-- Ground Plane -->
+    <include>
+      <pose>0 -40 0 0 0 0</pose>
+      <uri>model://powerplant</uri>
+    </include>
+    <include>
+      <uri>model://youbot</uri>
+    </include>
+    <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+			<links>base_link</links>
+			<joints>caster_joint_bl;caster_joint_fl;caster_joint_br;caster_joint_fr;wheel_joint_bl;wheel_joint_fl;wheel_joint_br;wheel_joint_fr;arm_joint_0;arm_joint_1;arm_joint_2;arm_joint_3;arm_joint_4;arm_joint_5</joints>
+    </plugin>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose>-0.922286 13.5213 2.17736 0 0.119643 -1.75099</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
+  </world>
+</sdf>

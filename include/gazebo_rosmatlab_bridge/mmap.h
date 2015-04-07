@@ -62,6 +62,12 @@ template <class T=double>class Mmap {
       if(n == 0)
       {
         this->n = lseek(fd,0,SEEK_END);
+        if(this->n <=0)
+        {
+          printf("Size of file is less than or equal to 0");
+          close(fd);
+          return;
+        }
       }
       else
       {
@@ -112,6 +118,8 @@ template <class T=double>class Mmap {
 
 		virtual ~Mmap()
 		{
+      if(this->n <=0)//Nothing to do
+        return;
       map[0] = 0;//Set to write mode before closing
 			if (map)
 				if (munmap(map, n*sizeof(uint8_t)) == -1)

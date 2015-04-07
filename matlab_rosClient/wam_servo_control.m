@@ -2,10 +2,10 @@ function wam_servo_control(  )
 %wam_servo_control Control WAM arm using servos.
 sim = GazeboMatlabSimulator;
 sim.Reset;
-tf = 10;
+tf = 20;
 h = 0.1;%Step for only visualization as servo control is happening at 1Khz in plugin
 N = round(tf/h);
-sim.AttachServo(1:5,[100.0;20.0;100.0],[10;-10;50;-50]); 
+sim.AttachServo(1:5,[300.0;20.0;300.0],[10;-10;100;-100]); 
 sim.AttachServo(6:7,[100.0;20.0;100.0],[10;-10;30;-30]);
 sim.ActuatedJoints = 1:7;
 us = [-1;-1;1;-0.5;1;-1;1];%Desired Joint Angles

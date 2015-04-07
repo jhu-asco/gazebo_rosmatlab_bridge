@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="thruster">
+    <link name="link">
+      <inertial>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>1e-7</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1e-7</iyy>
+          <iyz>0</iyz>
+          <izz>1e-7</izz>
+        </inertia>
+      </inertial>
+      <visual name="thruster1_visual">
+        <geometry>
+          <mesh>
+            <scale>0.5 0.5 0.5</scale>
+            <uri>model://satellite/meshes/cone.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
