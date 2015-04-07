@@ -22,7 +22,7 @@
       <gravity>0 0 0</gravity>
     </physics>
     <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
-      <links>thruster1::link;thruster2::link;thruster3::link;thruster4::link;thruster5::link;thruster6::link;thruster7::link;thruster8::link;thruster10::link;satellite::link<links>
+      <links>thruster1::link;thruster2::link;thruster3::link;thruster4::link;thruster5::link;thruster6::link;thruster7::link;thruster8::link;thruster9::link;thruster10::link;satellite::link<links>
     </plugin>
   </world>
 </sdf>

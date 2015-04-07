@@ -48,8 +48,14 @@ classdef GazeboMatlabSimulator < handle
             % LinkStates{i} is of type MatlabRigidBodyState
             % see also MATLABLINKINPUT (class) MATLABRIGIDBODYSTATE (class)
             jointids = uint32(h.ActuatedJoints-1);
+            if nargin == 2
+                us_joints = [];
+            else
+                assert(length(us_joints) == length(h.ActuatedJoints));
+            end
             if nargin == 4
                 linkids = uint32(h.ActuatedLinks-1);
+                assert(length(h.ActuatedLinks) == length(us_links));
                 linkinputs = zeros(6,length(h.ActuatedLinks));
                 for count = 1:size(linkinputs,2)
                     linkinputs(:,count) = us_links{count}.getdata();
