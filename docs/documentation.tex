@@ -19,10 +19,11 @@ access to link and joint states; easy application of link and joint
 efforts; way to set model and joint states. 
 \subsection{Prerequisites:}
 \begin{itemize}
- \item  ros-hydro 
- \item Gazebo 1.9
- \item ros-hydro-gazebo-packages
+ \item  ros-hydro \\ Install Ubuntu 12.04: sudo apt-get install ros-hydro-desktop
+ \item Gazebo 1.9  \\ Install Ubuntu 12.04: sudo apt-get install ros-hydro-gazebo-ros
+ \item ros-hydro-gazebo-packages \\ Install Ubuntu 12.04: sudo apt-get install ros-hydro-gazebo-ros-pkgs
 \end{itemize}
+Although the code has not been tested on Ubuntu 14.04, it can be tested by installing ros-indigo-desktop, ros-indigo-gazebo-ros and ros-indigo-gazebo-ros-pkgs in a similar manner.
 
 \section{Package installation}
 Clone the package in catkin workspace and source the
@@ -214,6 +215,7 @@ There are some known bugs with this interface that need to be fixed.
  \item You can run the MATLAB scripts only when Gazebo is running. If not it
 will get stuck in some infinite loops and MATLAB should be forced to
 closed down 
+  \item The plugin works for Gazebo 1.9.x. It is known to fail in Gazebo 4.x and has not been tested on Gazebo2.x etc
 %\item Some times mex interface throws an error (Stream not ready
 %to be read). In this case, a temporary solution is to restart gazebo.
 %This is caused by the memory maps not syncing properly and to be fixed
