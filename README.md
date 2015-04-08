@@ -6,7 +6,7 @@ Installation:
 --------------
 Prerequisite installations:
 *	ros-hydro/indigo
-* Gazebo 1.9/2.x              
+* Gazebo 1.9/2.x
 * ros-hydro-gazebo-packages 
 
 Install hydro for ubuntu 12.04 and indigo for ubuntu 14.04.
