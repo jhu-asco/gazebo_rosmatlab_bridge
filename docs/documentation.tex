@@ -16,7 +16,7 @@
 This package provides a gazebo plugin and a mex interface for fast
 communication between MATLAB and Gazebo. The mex interface provides fast
 access to link and joint states; easy application of link and joint
-efforts; way to set model and joint states. 
+efforts; and setting of model and joint states. 
 \subsection{Prerequisites:}
 \begin{itemize}
  \item  ros-hydro \\ Install Ubuntu 12.04: sudo apt-get install ros-hydro-desktop
@@ -35,10 +35,7 @@ Example Usage: source setup_script.bash /usr/local/MATLAB/R2014a ~/hydro_workspa
 %\textasciitilde{}/hydro\_workspace 
 \section{Usage} 
 To use the bridge, first run the gazebo with one of the world files provided in ``worlds''
-folder. This should load an example model in gazebo with the required
-plugin. Then you can run one of the MATLAB scripts provided to control
-the models. For a simple example run arm\_closedloop.m and corresponding scene1.world for understanding how plugin works. To load the
-world file with gazebo, you can run either of these commands: 
+folder using these commands: 
 \begin{Verbatim}[frame=single]
  roslaunch gazebo_rosmatlab_bridge basic.launch scene:=scene1 
  ///scene1 can be replaced by any of the scenes from world folder
@@ -46,6 +43,10 @@ world file with gazebo, you can run either of these commands:
  ///Goto the worlds folder and run:
  gazebo scene1.world #Will load the world file directly
 \end{Verbatim}
+Then you can run one of the MATLAB scripts provided to control
+the models. For a simple example run \textbf{arm\_closedloop.m} after loading \textbf{scene1.world} into Gazebo and see what happens. For other interesting examples look into \textbf{section \ref{section:worldscriptpairs} }
+\vspace{2pt}
+
 \textbf{NOTE: Run Gazebo before running MATLAB script always.}
 
 \subsection{Gazebo Plugin Usage}
@@ -78,7 +79,7 @@ The description of the documentation files is as follows:
 
 These files should be opened from inside MATLAB for the hyperlinks to work properly. For control examples look at the section of examples under ``Closed Loop Controllers'' section. 
 
-\subsection{World Files description}
+\subsection{World Files description}\label{section:worldscriptpairs}
      \begin{table}[h!]
 	\begin{tabular}{|p{0.2\textwidth}|p{0.4\textwidth}|p{0.4\textwidth}|}
 	  \hline\\
