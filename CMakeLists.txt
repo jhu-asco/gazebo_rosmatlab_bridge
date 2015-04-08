@@ -20,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(Matlab REQUIRED)
 find_package(gazebo REQUIRED)
-find_package(OGRE)
+find_package(OGRE COMPONENTS Paging)
 
 
 
@@ -126,6 +126,14 @@ if (OGRE_FOUND)
   )
  message("OGRE_INCLUDE_DIRS: ${OGRE_INCLUDE_DIRS}")
 endif (OGRE_FOUND)
+
+if (OGRE_Paging_FOUND)
+  include_directories(
+  ${OGRE_Paging_INCLUDE_DIRS}
+  )
+ message("OGRE_Paging_INCLUDE_DIRS: ${OGRE_Paging_INCLUDE_DIRS}")
+endif (OGRE_Paging_FOUND)
+
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 ## Declare a cpp library
