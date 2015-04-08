@@ -28,8 +28,14 @@ sudo apt-get install ros-indigo-gazebo-ros ros-indigo-gazebo-ros-pkgs
 
 Package installation:
 --------------------------
- Copy the package into source folder of catkin workspace(For e.g. ~/catkin_ws/src/). 
- Run the setup_script.bash with the arguments as MATLAB_ROOT(Directory where MATLAB is installed) and ROS_WORKSPACE(~/catkin_ws if you have followed instructions above)
+Go into catkin workspace (~/catkin_ws for above instructions)/src folder:
+cd ~/catkin_ws/src
+
+Clone the package from git:
+git clone https://git.lcsr.jhu.edu/ggarime1/gazebo_rosmatlab_bridge.git
+
+
+Run the setup_script.bash with the arguments as MATLAB_ROOT(Directory where MATLAB is installed) and ROS_WORKSPACE(~/catkin_ws if you have followed instructions above)
 
 Example Usage: source setup_script /usr/local/MATLAB/R2014a ~/catkin_ws
 
