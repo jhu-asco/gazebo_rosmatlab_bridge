@@ -15,4 +15,4 @@ Example Usage: source setup_script /usr/local/MATLAB/R2014a ~/hydro_workspace
 
 Further Documentation:
 -------------------
-Lookup docs/documentation.pdf and docs/matlab_documentation folder
+Lookup __docs/documentation.pdf__ and __docs/matlab_documentation__ folder
