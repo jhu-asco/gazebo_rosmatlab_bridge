@@ -22,7 +22,11 @@ find_package(Matlab REQUIRED)
 find_package(gazebo REQUIRED)
 find_package(OGRE COMPONENTS Paging)
 
+find_package(PQP)
 
+IF (PQP_FOUND)
+  include_directories(${PQP_INCLUDE_DIRS})
+ENDIF (PQP_FOUND)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -144,6 +148,11 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 add_library(mex_mmap SHARED src/mex_mmap_interface.cpp)
 set(MEX_SOURCES mex_mmap)
 
+if (PQP_FOUND)
+  add_library(mex_pqp SHARED src/mex_pqp_interface.cpp)
+  set(MEX_SOURCES ${MEX_SOURCES} mex_pqp)
+endif (PQP_FOUND)
+
 add_library(${PROJECT_NAME} src/gazebo_matlab_pluginbridge.cpp)
 #add_library(gazebo_matlab_camera src/camera_matlab_plugin.cpp)
 
@@ -166,6 +175,10 @@ add_dependencies(${PROJECT_NAME} gazebo_rosmatlab_bridge_generate_messages_cpp)
 
 target_link_libraries(mex_mmap ${MATLAB_LIBRARIES} ${catkin_LIBRARIES}) #Link to matlab libraries
 target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
+
+if (PQP_FOUND)
+  target_link_libraries(mex_pqp ${MATLAB_LIBRARIES} ${PQP_LIBRARY} ${catkin_LIBRARIES}) #Link to matlab libraries
+endif (PQP_FOUND)
 
 if (OGRE_FOUND)
   target_link_libraries(trajectory_visualizer ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})

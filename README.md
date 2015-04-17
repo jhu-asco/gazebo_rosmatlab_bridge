@@ -42,3 +42,7 @@ Example Usage: source setup_script /usr/local/MATLAB/R2014a ~/catkin_ws
 Further Documentation:
 -------------------
 Lookup __docs/documentation.pdf__ and __docs/matlab_documentation__ folder
+
+Notes:
+---------------------
+Compile PQP with -fPIC under x86_64 systems since it produces static libraries
