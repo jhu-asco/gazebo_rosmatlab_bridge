@@ -158,7 +158,7 @@ classdef GazeboMatlabSimulator < handle
                 mex_mmap('publishtrajectory',h.MexData,[],markerinfo.id,markerinfo.MODIFY);%Clear the line points
                 mex_mmap('publishtrajectory',h.MexData,[],markerinfo.id,markerinfo.DELETE);%Then Delete line
             else
-                data(1:2,:) = 0.01*data(1:2,:);%Some scaling issue
+                data(1:2,:) = markerinfo.scale*data(1:2,:);%Some scaling issue
                 mex_mmap('publishtrajectory',h.MexData, data, markerinfo.id, markerinfo.action, markerinfo.color);
             end
         end

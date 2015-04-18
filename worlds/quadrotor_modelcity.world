@@ -3,7 +3,6 @@
   <world name="default">
     <!-- Ground Plane -->
     <include>
-      <pose>-5 -5 0 0 0 0</pose>
       <uri>model://modelcity</uri>
     </include>
     <!--include>

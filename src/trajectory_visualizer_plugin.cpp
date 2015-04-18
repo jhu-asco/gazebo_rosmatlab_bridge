@@ -76,6 +76,14 @@ namespace gazebo
 
               if(inputmsg.action == 0)
                 line->Clear();//Clear all the points if we are modifying the existing line rather than adding new points to the line
+
+              Ogre::String matName = "rgb" + Ogre::StringConverter::toString(inputmsg.color.r)+Ogre::StringConverter::toString(inputmsg.color.g)+Ogre::StringConverter::toString(inputmsg.color.b)+Ogre::StringConverter::toString(inputmsg.color.a);
+              Ogre::MaterialPtr materialPtr = Ogre::MaterialManager::getSingleton().getByName(matName);
+              if(!materialPtr.isNull())
+              {
+                line->setMaterial(matName);
+              }
+
             }
             else
             {
