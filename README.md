@@ -8,6 +8,7 @@ Prerequisite installations:
 *	ros-hydro/indigo
 * Gazebo 1.9/2.x
 * ros-hydro-gazebo-packages 
+* PQP (Optional)
 
 Install hydro for ubuntu 12.04 and indigo for ubuntu 14.04.
 
@@ -26,6 +27,23 @@ sudo apt-get install ros-hydro-gazebo-ros ros-hydro-gazebo-ros-pkgs
 For Indigo:
 sudo apt-get install ros-indigo-gazebo-ros ros-indigo-gazebo-ros-pkgs
 
+Instructions for Installing PQP:
+---------------------------------
+Download PQP from  [here](http://gamma.cs.unc.edu/SSV/); Untar the file and run make in the folder. If you are running a 64 bit operating system you should add the following lines to the Makefile :
+
+CFLAGS    = -O2 -I.
+
+__Add these lines here for x86_64 systems__
+
+CFLAGS += -fPIC
+CPPFLAGS += -fPIC
+
+Once compiled copy the files into your system using the following commands:
+
+sudo cp -r include /usr/local/include/PQP
+sudo cp lib/libPQP.a /usr/local/lib/libPQP.a
+sudo ldconfig
+
 Package installation:
 --------------------------
 Go into catkin workspace (~/catkin_ws for above instructions)/src folder:
@@ -38,6 +56,11 @@ git clone https://git.lcsr.jhu.edu/ggarime1/gazebo_rosmatlab_bridge.git
 Run the setup_script.bash with the arguments as MATLAB_ROOT(Directory where MATLAB is installed) and ROS_WORKSPACE(~/catkin_ws if you have followed instructions above)
 
 Example Usage: source setup_script /usr/local/MATLAB/R2014a ~/catkin_ws
+
+After installing the main components, if pqp is installed, you can run 
+source pqp_setup.bash 
+
+to setup collision checking module.
 
 Further Documentation:
 -------------------
