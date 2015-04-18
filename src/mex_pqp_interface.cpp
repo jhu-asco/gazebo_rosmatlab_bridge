@@ -2,10 +2,12 @@
  * #TODO Add lots of checks on whether meshes exist, PQPModel exists, arguments given correctly etc
 */
 /* system header */
-#include <math.h>
+//#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <gazebo_rosmatlab_bridge/pqpmesh.h>
 
 /* MEX header */
 #include <mex.h> 
@@ -14,7 +16,6 @@
 
 #include "PQP/PQP.h"
 
-#include <gazebo_rosmatlab_bridge/pqpmesh.h>
 
 #include <vector>
 #include <map>
@@ -145,9 +146,9 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
     }
     else if(!strcmp("computedistance",cmd))
     {
-      if(nlhs != 1 && nrhs != 4)
+      if(nlhs < 1 && nrhs != 4)
       {
-        mexErrMsgTxt("Have to send args as {cmd, Stored_Data, mesh_name1, mesh_name2} and output: distance between meshes");
+        mexErrMsgTxt("Have to send args as {cmd, Stored_Data, mesh_name1, mesh_name2} and output: distance between meshes; Optional output: closest points in mesh2 frame");
       }
       Data_struct *d = convertMat2Ptr<Data_struct>(prhs[1]);
 
@@ -173,15 +174,55 @@ void mexFunction(int nlhs, mxArray *plhs[],int nrhs, const mxArray *prhs[])
       double mesh_distance = (d->dres).Distance();
       assert(mesh_distance>=0);
 
+      //Check if mesh1 is inside mesh2:
+
+      //First find normal corresponding to mesh2
+      Tri *t2 = (mesh2->pm)->last_tri;//Last triangle from PQP Model
+      tf::Vector3 edge1((t2->p2[0] - t2->p1[0]),(t2->p2[1] - t2->p1[1]),(t2->p2[2] - t2->p1[2]));
+      tf::Vector3 edge2((t2->p3[0] - t2->p1[0]),(t2->p3[1] - t2->p1[1]),(t2->p3[2] - t2->p1[2]));
+      tf::Vector3 normal = (edge1.cross(edge2)).normalized();
+
+      //Get the vector pointing one mesh to other in the frame of mesh 2:
+      const PQP_REAL *point1 = (d->dres).P1();
+      const PQP_REAL *point2 = (d->dres).P2();
+      //printf("P1: %f,%f,%f\n",point1[0], point1[1], point1[2]);
+      //printf("P2: %f,%f,%f\n",point2[0], point2[1], point2[2]);
+
+      tf::Vector3 p1(point1[0],point1[1],point1[2]);
+      tf::Vector3 p2(point2[0],point2[1],point2[2]);
+      tf::Transform mesh_state12 = (mesh2->GetState()).inverse()*(mesh1->GetState());//Converts points in mesh1 frame to mesh2 frame
+
+      
+      //Transform p1 into mesh2 frame and substract it from p2:
+      tf::Vector3 p1_2 = (mesh_state12*p1);
+      tf::Vector3 p12 = p2 - p1_2;
+      p12.normalize();//Normalize the vector between the meshes
+
+      //Compute Inner product:
+      double inner_product = p12.dot(normal);
+      //printf("Inner product: %f\n",inner_product);
+      if(inner_product > 0)//Can add tolerance here #TODO
+        mesh_distance = -mesh_distance;
+
       // subtract safety distance
       //d = MAX(0, d - sd);//#TODO
 
-
-      //  if (dem.Inside(dres.P1()[0], dres.P1()[1], dres.P1()[2]))
-
-      //#TODO Add normal of the closest point
-
       plhs[0] = mxCreateDoubleScalar(mesh_distance);
+      if(nlhs >= 2)
+      {
+        plhs[1] = mxCreateDoubleMatrix(3,2,mxREAL);
+        double *pointer = mxGetPr(plhs[1]);
+        pointer[0] = p1_2.x(); pointer[1] = p1_2.y(); pointer[2] = p1_2.z();
+        pointer[3] = p2.x(); pointer[4] = p2.y(); pointer[5] = p2.z();
+      }
+      if(nlhs >=3)
+      {
+        plhs[2] = mxCreateDoubleMatrix(3,3,mxREAL);
+        double *pointer = mxGetPr(plhs[2]);
+        pointer[0] = t2->p1[0]; pointer[1] = t2->p1[1]; pointer[2] = t2->p1[2];
+        pointer[3] = t2->p2[0]; pointer[4] = t2->p2[1]; pointer[5] = t2->p2[2];
+        pointer[6] = t2->p3[0]; pointer[7] = t2->p3[1]; pointer[8] = t2->p3[2];
+      }
     }
   }
   else

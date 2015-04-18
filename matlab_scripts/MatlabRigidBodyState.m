@@ -25,6 +25,10 @@ classdef MatlabRigidBodyState < handle
             %Output as [13x1] data from existing data
             output = [h.position; h.orientation; h.linearvelocity; h.angularvelocity];
         end
+        function output = getpositionandorientation(h)
+            %Output as [13x1] data from existing data
+            output = [h.position; h.orientation];
+        end
     end
 end
 

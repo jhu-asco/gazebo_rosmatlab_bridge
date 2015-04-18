@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
 	message_generation
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -161,7 +162,7 @@ if (OGRE_FOUND)
 endif (OGRE_FOUND)
 
 ## Declare a cpp executable
- #add_executable(gazebo_rosmatlab_bridge_node src/bridge_node.cpp)
+#add_executable(stl_correct src/stl_correct.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -172,6 +173,8 @@ add_dependencies(${PROJECT_NAME} gazebo_rosmatlab_bridge_generate_messages_cpp)
 # target_link_libraries(gazebo_rosmatlab_bridge_node
 #   ${catkin_LIBRARIES}
 #)
+
+#target_link_libraries(stl_correct ${catkin_LIBRARIES}) #Link to matlab libraries
 
 target_link_libraries(mex_mmap ${MATLAB_LIBRARIES} ${catkin_LIBRARIES}) #Link to matlab libraries
 target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
