@@ -1,0 +1,495 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="irobot_hand">
+    <static>false</static>
+    <link name="base_link">
+      <inertial>
+        <mass>0.2</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision1">
+        <pose>0 0.02 0.045 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.114 0.1 0.075</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="collision2">
+        <pose>0 -0.02 0.045 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.0448</radius>
+            <length>0.075</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="base_link_vis">
+        <pose>0 -0.038000 -0.023000 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/palm.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name="finger0/base_rotation_link">
+      <pose>0.030750 0.038000 0.069477 0 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision_1">
+        <pose>0 0 -.0025 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0145</length>
+            <radius>0.025</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_2">
+        <pose>0 0 -.0104 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0145</length>
+            <radius>0.0165</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_3">
+        <pose>0 0 .0135 1.5707 0 1.5707</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.002</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_4">
+        <pose>0.013 0 .0135 1.5707 0 1.5707</pose>
+        <geometry>
+          <cylinder>
+            <length>0.008</length>
+            <radius>0.009</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_5">
+        <pose>-0.013 0 .0135 1.5707 0 1.5707</pose>
+        <geometry>
+          <cylinder>
+            <length>0.008</length>
+            <radius>0.009</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="finger0/base_rotation_link_vis">
+        <pose>0 0 0 1.57 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_base.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name="finger0/proximal_link">
+      <pose>0.030750 0.038000 0.082977 1.57 0 -3.140000</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision1">
+        <pose>0 0.0028 0.033 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.018 0.019 0.055</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="collision2">
+        <pose>0 0 0 0 1.5707 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.009</radius>
+            <length>0.018</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 1.57 -1.57 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_proximal.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name='finger0/distal_link'>
+      <pose>0.030626 0.116000 0.083039 1.57 0 -3.140000</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name='collision'>
+        <pose>0 0.0025 0.019 3.141590 0.001593 3.141590</pose>
+        <geometry>
+          <box>
+            <size>0.0175 0.02023 0.04043</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='visual'>
+        <pose>0 0 0 3.141590 0.001593 3.141590</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_distal.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+
+
+    <link name="finger1/base_rotation_link">
+      <pose>-0.030750 0.038000 0.069477 0 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision_1">
+        <pose>0 0 -.0025 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0145</length>
+            <radius>0.025</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_2">
+        <pose>0 0 -.0104 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <length>0.0145</length>
+            <radius>0.0165</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_3">
+        <pose>0 0 .0135 1.5707 0 1.5707</pose>
+        <geometry>
+          <cylinder>
+            <length>0.02</length>
+            <radius>0.002</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_4">
+        <pose>0.013 0 .0135 1.5707 0 1.5707</pose>
+        <geometry>
+          <cylinder>
+            <length>0.008</length>
+            <radius>0.009</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="collision_5">
+        <pose>-0.013 0 .0135 1.5707 0 1.5707</pose>
+        <geometry>
+          <cylinder>
+            <length>0.008</length>
+            <radius>0.009</radius>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 1.57 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_base.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name="finger1/proximal_link">
+      <pose>-0.030750 0.038000 0.082977 1.57 0 -3.140000</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision1">
+        <pose>0 0.0028 0.033 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.018 0.019 0.055</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="collision2">
+        <pose>0 0 0 0 1.5707 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.009</radius>
+            <length>0.018</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 1.57 -1.57 -0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_proximal.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name="finger1/distal_link">
+      <pose>-0.030874 0.116000 0.083039 1.57 0 -3.140000</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <pose>0 0.0025 0.019 3.141590 0.001593 3.141590</pose>
+        <geometry>
+          <box>
+            <size>0.0175 0.02023 0.04043</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 3.141590 0.001593 3.141590</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_distal.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name="finger2/proximal_link">
+      <pose>0 -0.038000 0.082755 1.57 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision1">
+        <pose>0 0.0028 0.033 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.018 0.019 0.055</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="collision2">
+        <pose>0 0 0 0 1.5707 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.009</radius>
+            <length>0.018</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 1.57 -1.57 -0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_proximal.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name="finger2/distal_link">
+      <pose>0 -0.116000 0.082817 1.57 0 0</pose>
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.1000</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.1000</iyy>
+          <iyz>0</iyz>
+          <izz>0.1000</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <pose>0 0.0025 0.019 3.141590 0.001593 3.141590</pose>
+        <geometry>
+          <box>
+            <size>0.0175 0.02023 0.04043</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0 0 0 3.141590 0.001593 3.141590</pose>
+        <geometry>
+          <mesh>
+            <uri>model://irobot_hand/meshes/finger_distal.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+
+
+    <joint name="finger0/joint_base_rotation" type="revolute">
+      <child>finger0/base_rotation_link</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics />
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+    <joint name="finger0/joint_base" type="revolute">
+      <child>finger0/proximal_link</child>
+      <parent>finger0/base_rotation_link</parent>
+      <axis>
+        <xyz>0.999999 0.001593 -0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics />
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+    <joint name='finger0/proximal_to_distal' type='revolute'>
+      <child>finger0/distal_link</child>
+      <parent>finger0/proximal_link</parent>
+      <axis>
+        <xyz>0.999998 0.0001593 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <joint name="finger1/joint_base_rotation" type="revolute">
+      <child>finger1/base_rotation_link</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics />
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+    <joint name="finger1/joint_base" type="revolute">
+      <child>finger1/proximal_link</child>
+      <parent>finger1/base_rotation_link</parent>
+      <axis>
+        <xyz>0.999999 0.001593 -0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics />
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+    <joint name='finger1/proximal_to_distal' type='revolute'>
+      <child>finger1/distal_link</child>
+      <parent>finger1/proximal_link</parent>
+      <axis>
+        <xyz>0.999999 0.001593 -0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+    <joint name="finger2/joint_base" type="revolute">
+      <child>finger2/proximal_link</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>-1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics />
+        <use_parent_model_frame>true</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <joint name='finger2/proximal_to_distal' type='revolute'>
+      <child>finger2/distal_link</child>
+      <parent>finger2/proximal_link</parent>
+      <axis>
+        <xyz>-1 0 0.000796</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>1.57</upper>
+        </limit>
+        <dynamics/>
+      </axis>
+    </joint>
+
+
+  </model>
+</sdf>

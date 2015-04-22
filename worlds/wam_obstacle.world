@@ -27,7 +27,7 @@
         <uri>model://WAM Model ROS</uri>
       </include>
       <include>
-        <uri>model://irobot_hand</uri>
+        <uri>model://irobot_hand_simplified</uri>
         <pose>1.3 0 0.78 1.57 0 1.57</pose>
       </include>
       <joint name="armjoint" type="revolute">
@@ -127,7 +127,7 @@
     </model>-->
 
     <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
-      <joints>wamwitharm::iri_wam::j1_joint;wamwitharm::iri_wam::j2_joint;wamwitharm::iri_wam::j3_joint;wamwitharm::iri_wam::j4_joint;wamwitharm::iri_wam::j5_joint;wamwitharm::iri_wam::j6_joint;wamwitharm::iri_wam::j7_joint</joints>
+      <joints>wamwitharm::iri_wam::j1_joint;wamwitharm::iri_wam::j2_joint;wamwitharm::iri_wam::j3_joint;wamwitharm::iri_wam::j4_joint;wamwitharm::iri_wam::j5_joint;wamwitharm::iri_wam::j6_joint;wamwitharm::iri_wam::j7_joint;wamwitharm::irobot_hand::finger0/joint_base_rotation;wamwitharm::irobot_hand::finger1/joint_base_rotation;wamwitharm::irobot_hand::finger0/joint_base;wamwitharm::irobot_hand::finger1/joint_base;wamwitharm::irobot_hand::finger2/joint_base;wamwitharm::irobot_hand::finger0/proximal_to_distal;wamwitharm::irobot_hand::finger1/proximal_to_distal;wamwitharm::irobot_hand::finger2/proximal_to_distal</joints>
       <links>wamwitharm::iri_wam::wam_link7</links>
     </plugin>
   </world>
