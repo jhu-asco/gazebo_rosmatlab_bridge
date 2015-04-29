@@ -1,6 +1,7 @@
 Gazebo Matlab Bridge using Ros serialization
 ---------------------------------------------------------------------
 This package provides a gazebo plugin and a mex interface for fast communication between matlab and Gazebo. The mex interface provides fast access to link and joint states; easy application of link and joint efforts; way to set model and joint states. Various matlab examples have been provided in MATLAB
+![Applications of Gazebo Matlab Bridge](http://flyingmanipulators.lcsr.jhu.edu/wp-content/uploads/2015/04/picture_collage.png)
 
 Installation:
 --------------
