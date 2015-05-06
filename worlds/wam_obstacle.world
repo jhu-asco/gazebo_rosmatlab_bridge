@@ -34,6 +34,7 @@
         <parent>iri_wam::wam_link7</parent>
         <child>irobot_hand::base_link</child>
         <axis>
+          <xyz>1.0 0 0</xyz>
           <limit>
             <lower>0.000000</lower>
             <upper>0.000000</upper>
