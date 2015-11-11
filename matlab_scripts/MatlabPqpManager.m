@@ -1,6 +1,6 @@
 classdef MatlabPqpManager<handle
-    %MATLABPQPMANAGER Loads Pqp meshes and provides routines to compute
-    %distances between two meshes. If the first mesh is inside second
+    %MATLABPQPMANAGER Loads Pqp meshes and provides routines to compute distances between two meshes. 
+    % If the first mesh is inside second
     %provides negative distance implying collision.
     
     properties (Access = private)

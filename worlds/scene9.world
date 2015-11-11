@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <world name="default">
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane_with_visual_plugin</uri>
+    </include>
+    <!-- Light Source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 5 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>1 1 -1</direction>
+    </light>
+    <!-- Ground Plane -->
+    <include>
+      <pose>0 0 1 0 1.57 0</pose>
+      <!-- 0.14 obtained from the sdf file of wam-->
+      <uri>model://cyton_gamma_1500_description</uri>
+    </include>
+    <plugin name="gazebo_rosmatlab_bridge" filename="libgazebo_rosmatlab_bridge.so">
+      <joints>shoulder_roll_joint;shoulder_pitch_joint;shoulder_yaw_joint;elbow_pitch_joint;elbow_yaw_joint;wrist_pitch_joint;wrist_roll_joint;gripper_joint;gripper_joint2</joints>
+      <links>wrist_roll</links>
+    </plugin>
+  </world>
+</sdf>

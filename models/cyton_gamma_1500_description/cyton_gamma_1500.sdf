@@ -1,0 +1,566 @@
+<?xml version="1.0" ?>
+<sdf version='1.5'>
+  <model name='cyton_gamma_1500'>
+    <link name='base_footprint'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.0115 0.047 0 -0 0</pose>
+        <mass>0.24</mass>
+        <inertia>
+          <ixx>0.0008033</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00065104</iyy>
+          <iyz>2.71051e-20</iyz>
+          <izz>0.0011009</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_footprint_collision_base_link'>
+        <pose>0 0.0115 0.047 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.154 0.177 0.094</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='base_footprint_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.001</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name='base_footprint_visual_base_link'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/base.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name="base_footprint_fix" type="revolute">
+      <child>base_footprint</child>
+      <parent>world</parent>
+      <axis>
+        <limit>
+          <lower>0.000000</lower>
+          <upper>0.000000</upper>
+        </limit>
+        <dynamics>
+          <damping>0.000000</damping>
+        </dynamics>
+        <xyz>0.000000 0.000000 1.000000</xyz>
+      </axis>
+    </joint>
+    <link name='shoulder_roll'>
+      <pose>0 0 0.05315 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.0907 0 -0 0</pose>
+        <mass>0.24</mass>
+        <inertia>
+          <ixx>0.000799188</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000851555</iyy>
+          <iyz>0</iyz>
+          <izz>0.00033407</izz>
+        </inertia>
+      </inertial>
+      <collision name='shoulder_roll_collision'>
+        <pose>0 0 0.0907 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.09829 0.08392 0.18143</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='shoulder_roll_visual'>
+        <pose>0 0 0 1.5708 -2.77556e-17 0.384</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/shoulder_roll.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='shoulder_roll_joint' type='revolute'>
+      <child>shoulder_roll</child>
+      <parent>base_footprint</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2.618</lower>
+          <upper>2.618</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.200000</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='shoulder_pitch'>
+      <pose>0.0205 0 0.1775 0 -0 0</pose>
+      <inertial>
+        <pose>-0.02 0 0.06 0 -0 0</pose>
+        <mass>0.24</mass>
+        <inertia>
+          <ixx>0.0010265</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00101</iyy>
+          <iyz>0</iyz>
+          <izz>0.0002725</izz>
+        </inertia>
+      </inertial>
+      <collision name='shoulder_pitch_collision'>
+        <pose>-0.02 0 0.06 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.08 0.085 0.21</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='shoulder_pitch_visual'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/shoulder_pitch.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='shoulder_pitch_joint' type='revolute'>
+      <child>shoulder_pitch</child>
+      <parent>shoulder_roll</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1.8326</lower>
+          <upper>1.8326</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.100000</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='shoulder_yaw'>
+      <pose>-0.001 -0.0205 0.303 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.025 0.0623 0 -0 0</pose>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>0.000464246</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000457544</iyy>
+          <iyz>0</iyz>
+          <izz>0.000126656</izz>
+        </inertia>
+      </inertial>
+      <collision name='shoulder_yaw_collision'>
+        <pose>0 0.025 0.0623 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.0717 0.0756 0.1846</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='shoulder_yaw_visual'>
+        <pose>0 0 0 1.5708 5.55112e-17 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/shoulder_yaw.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='shoulder_yaw_joint' type='revolute'>
+      <child>shoulder_yaw</child>
+      <parent>shoulder_pitch</parent>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-1.8326</lower>
+          <upper>1.8326</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <damping>0.100000</damping>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='elbow_pitch'>
+      <pose>0.017 0.0001 0.4188 0 -0 0</pose>
+      <inertial>
+        <pose>-0.025 0 0.07785 0 -0 0</pose>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>0.000350216</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.000317993</iyy>
+          <iyz>0</iyz>
+          <izz>0.00010255</izz>
+        </inertia>
+      </inertial>
+      <collision name='elbow_pitch_collision'>
+        <pose>-0.025 0 0.07785 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.0549 0.076 0.1557</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='elbow_pitch_visual'>
+        <pose>0 0 0 1.5708 -2.11758e-22 -3.14159</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/elbow_pitch.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='elbow_pitch_joint' type='revolute'>
+      <child>elbow_pitch</child>
+      <parent>shoulder_yaw</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1.8326</lower>
+          <upper>1.8326</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.100000</damping>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='elbow_yaw'>
+      <pose>-0.0001 -0.0179 0.51626 0 -0 0</pose>
+      <inertial>
+        <pose>0 0.02 0.058 0 -0 0</pose>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>0.00017584</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00019038</iyy>
+          <iyz>0</iyz>
+          <izz>5.22467e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='elbow_yaw_collision'>
+        <pose>0 0.02 0.058 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.0535 0.0402 0.116</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='elbow_yaw_visual'>
+        <pose>0 0 0 1.5708 -5.55112e-17 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/elbow_yaw.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='elbow_yaw_joint' type='revolute'>
+      <child>elbow_yaw</child>
+      <parent>elbow_pitch</parent>
+      <axis>
+        <xyz>0 -1 0</xyz>
+        <limit>
+          <lower>-1.8326</lower>
+          <upper>1.8326</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.100000</damping>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='wrist_pitch'>
+      <pose>0.02616 0.0001 0.58806 0 -0 0</pose>
+      <inertial>
+        <pose>-0.025925 0.013 0.01 0 -0 0</pose>
+        <mass>0.14</mass>
+        <inertia>
+          <ixx>2.99629e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>5.34412e-05</iyy>
+          <iyz>0</iyz>
+          <izz>3.92516e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='wrist_pitch_collision'>
+        <pose>-0.025925 0.013 0.01 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05185 0.026 0.0435</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='wrist_pitch_visual'>
+        <pose>0 0 0 1.5708 -5.55112e-17 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/wrist_pitch.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='wrist_pitch_joint' type='revolute'>
+      <child>wrist_pitch</child>
+      <parent>elbow_yaw</parent>
+      <axis>
+        <xyz>-1 0 0</xyz>
+        <limit>
+          <lower>-1.8326</lower>
+          <upper>1.8326</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.100000</damping>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='wrist_roll'>
+      <pose>-9.5e-05 0.0001 0.639485 0 -0 0</pose>
+      <inertial>
+        <pose>-1.65417e-07 -0.00139934 0.0300035 0 -0 0</pose>
+        <mass>0.14001</mass>
+        <inertia>
+          <ixx>0.000187197</ixx>
+          <ixy>2.15373e-10</ixy>
+          <ixz>1.1446e-09</ixz>
+          <iyy>0.000157516</iyy>
+          <iyz>-4.5962e-09</iyz>
+          <izz>9.22904e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='wrist_roll_collision'>
+        <pose>0 -0.0014 0.03 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.0518 0.0723 0.104</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='wrist_roll_visual'>
+        <pose>0 0 0 -3.14159 2.11758e-22 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/wrist_roll.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='wrist_roll_visual_virtual_endeffector'>
+        <pose>-0.002316 0.0079 0.079425 0 -0 0</pose>
+        <geometry>
+          <sphere>
+            <radius>0.002</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='wrist_roll_joint' type='revolute'>
+      <child>wrist_roll</child>
+      <parent>wrist_pitch</parent>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2.61799</lower>
+          <upper>2.61799</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.100000</damping>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='gripper_finger1'>
+      <pose>-0.013405 0.00495 0.71671 0 -0 0</pose>
+      <inertial>
+        <pose>-0.005 0.0172 0.02 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>1.15861e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.03385e-05</iyy>
+          <iyz>0</iyz>
+          <izz>3.12254e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='gripper_finger1_collision'>
+        <pose>-0.005 0.0172 0.02 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.015 0.0229 0.0475</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='gripper_finger1_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/gripper_finger1.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='gripper_joint' type='prismatic'>
+      <child>gripper_finger1</child>
+      <parent>wrist_roll</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.008</lower>
+          <upper>0.008</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.100000</damping>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='gripper_finger2'>
+      <pose>0.009705 0.00495 0.71671 0 -0 0</pose>
+      <inertial>
+        <pose>0.005 0.0172 0.02 0 -0 0</pose>
+        <mass>0.05</mass>
+        <inertia>
+          <ixx>1.15861e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>1.03385e-05</iyy>
+          <iyz>0</iyz>
+          <izz>3.12254e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='gripper_finger2_collision'>
+        <pose>0.005 0.0172 0.02 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.015 0.0229 0.0475</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='gripper_finger2_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://cyton_gamma_1500_description/meshes/gripper_finger2.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0</angular>
+      </velocity_decay>
+    </link>
+    <joint name='gripper_joint2' type='prismatic'>
+      <child>gripper_finger2</child>
+      <parent>wrist_roll</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.008</lower>
+          <upper>0.008</upper>
+          <effort>1000</effort>
+          <velocity>1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0.100000</damping>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+  </model>
+</sdf>
