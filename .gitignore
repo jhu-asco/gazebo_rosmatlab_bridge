@@ -2,3 +2,10 @@
 models/roscamera
 models/modelcity/
 *.blend
+*.pdf
+TODO
+docs/documentation.tex.backup
+matlab_scripts/ddp/
+models/hackerman/
+worlds/matts_world.world
+worlds/quadrotor_hackerman.world
