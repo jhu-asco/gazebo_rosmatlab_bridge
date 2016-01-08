@@ -80,7 +80,9 @@ The description of the documentation files is as follows:
 These files should be opened from inside MATLAB for the hyperlinks to work properly. For control examples look at the section of examples under ``Closed Loop Controllers'' section. 
 
 \subsection{World Files description}\label{section:worldscriptpairs}
-     \begin{table}[h!]
+
+\subsubsection{Point stabilization or trajectory tracking}
+      \begin{table}[h!]
 	\begin{tabular}{|p{0.2\textwidth}|p{0.4\textwidth}|p{0.4\textwidth}|}
 	  \hline\\
 	  World File & Description & Matlab Script \\ \hline \hline
@@ -94,12 +96,24 @@ These files should be opened from inside MATLAB for the hyperlinks to work prope
 	  scene8.world & Satellite & satellite\_test.m\\ \hline
     scene9.world & Cyton Arm & cyton\_servo\_control.m\\ \hline
 	\end{tabular}
+
+\subsubsection{Optimal control}
       \end{table}
-      
-The following section is only for advanced users and is not necessary for students interested in just using the interface.
+        \begin{table}[h!]
+	\begin{tabular}{|p{0.2\textwidth}|p{0.4\textwidth}|p{0.4\textwidth}|}
+	  \hline\\
+	  World File & Description & Matlab Script \\ \hline \hline
+	  scene1.world & Double Pendulum & arm\_shooting.m arm\_sddp\_analytic.m arm\_sddp\_gazeobo.m \\ \hline
+	  scene2.world & RcCar Model & car\_shooting.m  \\ \hline
+	  scene3.world & Wam arm & wam\_shooting.m \\ \hline
+	\end{tabular}
+      \end{table}   
+
+
   
 \subsection{Mex Documentaion (Created from the source
 file):}\label{mex-documentaion-created-from-the-source-file}
+ This section is only for advanced users and is not necessary for students interested in just using the interface.
 
 This file provides a mex interface for communicating with Gazebo. This
 file should be used along with the world plugin
