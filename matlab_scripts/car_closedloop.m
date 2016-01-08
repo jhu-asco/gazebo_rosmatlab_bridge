@@ -115,7 +115,8 @@ function [u,S] = CarController(x,S)
     ydot = [x(4)*cos(x(3)); x(4)*sin(x(3))];
     yd = S.xf(1:2);
     ydotd = [S.xf(4)*cos(S.xf(3)); S.xf(4)*sin(S.xf(3))];
-    v = kpv*(yd - y) + kpvd*(ydotd - ydot);%Gives the virtual input
+    ydoubledotd = [-S.xf(4)*S.omega*sin(S.xf(3)); S.xf(4)*S.omega*cos(S.xf(3))];
+    v = kpv*(yd - y) + kpvd*(ydotd - ydot) + ydoubledotd;%Gives the virtual input
     %disp('v:')
     %disp(v);
     if abs(S.xi) > 0.01
