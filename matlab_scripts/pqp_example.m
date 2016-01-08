@@ -7,7 +7,7 @@
 h = MatlabPqpManager;
 %Load mesh and a point with tolerance = 0.1
 %Modify this to your local path
-meshpath = '/home/gowtham/hydro_workspace/src/gazebo_rosmatlab_bridge/models/modelcity/meshes/city_corrected_normals.stl';
+meshpath = '/home/gowtham/indigo_workspace/src/gazebo_rosmatlab_bridge/models/modelcity/meshes/city_corrected_normals.stl';
 h.Loadmesh(meshpath,'modelcity');
 h.Loadmesh(0.4,'sphere');
 pointstate = MatlabRigidBodyState;
