@@ -222,22 +222,22 @@ namespace gazebo
             case SCREW :
             case REVOLUTE :
               //gzdbg<<"Joint Angle: "<<joint_state.angle.x<<"\t"<<joint_state.vel_angle.x<<std::endl;
-              joint->SetAngle(0,joint_state.angle.x);
+              joint->SetPosition(0,joint_state.angle.x);
               joint->SetVelocity(0,joint_state.vel_angle.x);
               //gzdbg<<"Joint Angle after setting: "<<joint->GetAngle(0).Radian()<<"\t"<<joint->GetVelocity(0)<<endl;
 
               break;
             case UNIVERSAL :
             case REVOLUTE2 :
-              joint->SetAngle(0,joint_state.angle.x);
-              joint->SetAngle(1,joint_state.angle.y);
+              joint->SetPosition(0,joint_state.angle.x);
+              joint->SetPosition(1,joint_state.angle.y);
               joint->SetVelocity(0,joint_state.vel_angle.x);
               joint->SetVelocity(1,joint_state.vel_angle.y);
               break;
             case BALL :
-              joint->SetAngle(0,joint_state.angle.x);
-              joint->SetAngle(1,joint_state.angle.y);
-              joint->SetAngle(2,joint_state.angle.z);
+              joint->SetPosition(0,joint_state.angle.x);
+              joint->SetPosition(1,joint_state.angle.y);
+              joint->SetPosition(2,joint_state.angle.z);
               joint->SetVelocity(0,joint_state.vel_angle.x);
               joint->SetVelocity(1,joint_state.vel_angle.y);
               joint->SetVelocity(2,joint_state.vel_angle.z);
@@ -542,7 +542,7 @@ namespace gazebo
             start = std::clock();
             //start_worldupdate = std::clock();
             //gzdbg<<"Time :"<<gazebo::common::Time::GetWallTime()<<endl;
-            world->StepWorld(nofsteps);
+            world->Step(nofsteps);
             //world->SetPaused(false);
             //world->Step(nofsteps);
             //gzdbg << "Time: " << (std::clock() - start) / (double)(CLOCKS_PER_SEC / 1000000) << " microsec" << std::endl;

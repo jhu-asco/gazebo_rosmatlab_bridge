@@ -2,7 +2,7 @@ function cyton_servo_control(  )
 %cyton_servo_control Control Cyton arm using servos.
 sim = GazeboMatlabSimulator;
 sim.Reset;
-tf = 2;
+tf = 4;
 h = 0.01;%Step for only visualization as servo control is happening at 1Khz in plugin
 N = round(tf/h);%Number of steps to run
 %For 10 seconds:
@@ -12,14 +12,15 @@ N = round(tf/h);%Number of steps to run
 % sim.AttachServo(4:7,[2.0;0.5;0.0],[5;-5;100;-100]);
 % sim.AttachServo(8:9,[0.1;0.0;0.0],[2;-2;30;-30],1);
 % For 2 seconds:
-sim.AttachServo(1,[20.0;1.0;0.0],[50;-50;1000;-1000]); %Attach servos for joint angle control
-sim.AttachServo(2,[20.0;5.0;0.0],[20;-20;100;-100]);
-sim.AttachServo(3,[20.0;5.0;0.0],[20;-20;100;-100]);
-sim.AttachServo(4:7,[10.0;1.0;0.0],[5;-5;100;-100]);
+sim.AttachServo(1,[10.0;5.0;1.0],[50;-50;1000;-1000]); %Attach servos for joint angle control
+sim.AttachServo(2,[5.0;5.0;1.0],[20;-20;100;-100]);
+sim.AttachServo(3,[5.0;5.0;1.0],[20;-20;100;-100]);
+sim.AttachServo(4:7,[5.0;5.0;0.0],[5;-5;100;-100]);
 sim.AttachServo(8:9,[0.5;0.0;0.0],[2;-2;30;-30],1);
 
 sim.ActuatedJoints = 1:9;
 us = [1;-1;1;-1;1;-1;1;-0.05;0.05];%Desired Joint Angles
+
 %Visualization:
 m = MarkerInfo;
 sim.PublishTrajectory([0.639485; 0; 1.0],m);%Initialposition from foward kin
